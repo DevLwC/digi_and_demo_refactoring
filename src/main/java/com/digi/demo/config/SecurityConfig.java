@@ -17,16 +17,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // Disable CSRF for simplicity in this demo; not recommended for production
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/**",
                                 "/h2-console/**",
                                 "/",
                                 "/login",
                                 "/register",
+                                "/dashboard",
                                 "/css/**",
                                 "/js/**"
                         ).permitAll()

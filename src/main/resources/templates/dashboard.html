@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DigiDemo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-3">
+    <h3 class="mb-3">Dashboard</h3>
+    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Users</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="friends-tab" data-bs-toggle="tab" data-bs-target="#friends" type="button" role="tab">Friends</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">Posts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">Chat</button>
+        </li>
+    </ul>
+    <div class="tab-content mt-3">
+        <!-- Users Tab -->
+        <div class="tab-pane fade show active" id="users" role="tabpanel">
+            <form id="searchUserForm" class="mb-2">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchUsername" placeholder="Search username" required>
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+            <ul id="userResults" class="list-group"></ul>
+        </div>
+        <!-- Friends Tab -->
+        <div class="tab-pane fade" id="friends" role="tabpanel">
+            <form id="friendRequestForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="friendSender" placeholder="Your username" required>
+                <input type="text" class="form-control mb-2" id="friendReceiver" placeholder="Friend's username" required>
+                <button class="btn btn-primary w-100" type="submit">Send Friend Request</button>
+            </form>
+            <form id="pendingRequestsForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="pendingReceiver" placeholder="Your username" required>
+                <button class="btn btn-secondary w-100" type="submit">Show Pending Requests</button>
+            </form>
+            <ul id="pendingRequests" class="list-group"></ul>
+        </div>
+        <!-- Posts Tab -->
+        <div class="tab-pane fade" id="posts" role="tabpanel">
+            <form id="createPostForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="postAuthor" placeholder="Your username" required>
+                <textarea class="form-control mb-2" id="postContent" placeholder="What's on your mind?" required></textarea>
+                <button class="btn btn-primary w-100" type="submit">Create Post</button>
+            </form>
+            <form id="fetchFeedForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="feedUsername" placeholder="Your username" required>
+                <button class="btn btn-secondary w-100" type="submit">Show Feed</button>
+            </form>
+            <ul id="postFeed" class="list-group"></ul>
+        </div>
+        <!-- Chat Tab -->
+        <div class="tab-pane fade" id="chat" role="tabpanel">
+            <form id="sendMessageForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="chatSender" placeholder="Your username" required>
+                <input type="text" class="form-control mb-2" id="chatReceiver" placeholder="Receiver username" required>
+                <input type="text" class="form-control mb-2" id="chatContent" placeholder="Message" required>
+                <button class="btn btn-primary w-100" type="submit">Send Message</button>
+            </form>
+            <form id="fetchChatForm" class="mb-2">
+                <input type="text" class="form-control mb-2" id="chatUser1" placeholder="User 1" required>
+                <input type="text" class="form-control mb-2" id="chatUser2" placeholder="User 2" required>
+                <button class="btn btn-secondary w-100" type="submit">Show Chat</button>
+            </form>
+            <ul id="chatMessages" class="list-group"></ul>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
