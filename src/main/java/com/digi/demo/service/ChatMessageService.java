@@ -21,8 +21,8 @@ public class ChatMessageService {
     }
 
     public List<ChatMessage> getChat(User user1, User user2) {
-        return chatMessageRepository.findBySenderAndReceiverOrReceiverAndSenderOrderByTimestamp(
-            user1, user2, user2, user1
+        return chatMessageRepository.findChatBetweenUsers(
+            user1, user2
         );
     }
 }
