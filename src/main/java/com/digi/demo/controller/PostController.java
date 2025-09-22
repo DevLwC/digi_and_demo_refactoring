@@ -42,6 +42,7 @@ public class PostController {
         }
         List<Post> feed = new ArrayList<>();
         feed.addAll(postService.getPostsByFriends(friendUsers));
+        friendUsers.add(user);
         feed.addAll(postService.getPostsByOthers(friendUsers));
         return feed;
     }

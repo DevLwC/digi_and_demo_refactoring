@@ -24,6 +24,6 @@ public class PostService {
     }
 
     public List<Post> getPostsByOthers(List<User> friends) {
-        return postRepository.findByAuthorNotInOrderByCreatedAtDesc(friends);
+        return postRepository.findPostsNotByFriends(friends);
     }
 }
