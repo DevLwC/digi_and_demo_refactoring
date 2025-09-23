@@ -40,6 +40,8 @@ jobs:
         with:
           name: java-app
           path: .   # WICHTIG: app.jar landet im Root-Verzeichnis
+      - name: List files in directory
+        run: ls -la
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
