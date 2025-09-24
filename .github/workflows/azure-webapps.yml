@@ -11,11 +11,11 @@ permissions:
 
 env:
   # Azure Container Registry
-  ACR_NAME: myspringbootacr
+  ACR_NAME: ContainerRegistryPlayground
   IMAGE_NAME: springboot-app
   
   # Azure Container Instance
-  RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
+  RESOURCE_GROUP: digi_and_demo
   ACI_NAME: springboot-aci
   
   # Application settings
@@ -42,9 +42,9 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-id: eb69e0c2-19e9-40af-9322-49c7656fa59e
+        tenant-id: e51efa56-0625-4fc1-8dee-ca25181f21da
+        subscription-id: 73f0cece-ec82-4e19-a707-7ef7e30fde69
 
     - name: Build and push Docker image
       run: |
@@ -75,8 +75,8 @@ jobs:
           --resource-group $RESOURCE_GROUP \
           --name $ACI_NAME \
           --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
-          --acr-identity-resource-id /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
-          --assign-identity /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
+          --acr-identity-resource-id /subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
+          --assign-identity /subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
           --ports $APP_PORT \
           --dns-name-label $ACI_NAME-${{ github.run_number }} \
           --cpu 1 \
