@@ -2,18 +2,22 @@ name: Build and Deploy Spring Boot App
 
 on:
   push:
-    branches: [main]
+    branches: [ master ]
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
 
 env:
   # Azure Container Registry
-  ACR_NAME: ContainerRegistryPlayground
-  IMAGE_NAME: springboot-app-itech
-
+  ACR_NAME: myspringbootacr
+  IMAGE_NAME: springboot-app
+  
   # Azure Container Instance
   RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
-  ACI_NAME: springboot-itech-aci
-
+  ACI_NAME: springboot-aci
+  
   # Application settings
   APP_PORT: 8080
 
@@ -41,7 +45,6 @@ jobs:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
     - name: Build and push Docker image
       run: |
