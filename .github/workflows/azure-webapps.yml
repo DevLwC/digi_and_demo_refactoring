@@ -65,9 +65,9 @@ jobs:
     - name: Deploy to Azure Container Instance
       env:
         RESOURCE_GROUP: digi_and_demo
-        ACR_NAME: myacrname
-        ACI_NAME: myaci
-        IMAGE_NAME: myapp
+        ACI_NAME: springboot-aci
+        ACR_NAME: ContainerRegistryPlayground
+        IMAGE_NAME: springboot-app
         APP_PORT: 8080
         MANAGED_IDENTITY_NAME: myManagedIdentity
       run: |
