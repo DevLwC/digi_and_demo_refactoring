@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+//TODO: Check if author already submitted a note for this post
 @Repository
 public interface CommunityNoteRepository extends JpaRepository<CommunityNote, Long> {
     List<CommunityNote> findByPostAndStatus(Post post, NoteStatus status);

@@ -47,7 +47,7 @@ public class CommunityNoteController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
+//TODO. add restriction to vote multiple times on one note
     @PostMapping("/{noteId}/vote")
     public ResponseEntity<?> vote(
             @PathVariable Long noteId,
