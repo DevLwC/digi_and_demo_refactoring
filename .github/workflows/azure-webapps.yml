@@ -39,7 +39,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: java-app
-          path: .   # WICHTIG: app.jar landet im Root-Verzeichnis
+          path: .
+
       - name: List files in directory
         run: ls -la
 
@@ -49,4 +50,4 @@ jobs:
           app-name: digi-and-demo
           slot-name: production
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: 'app.jar'
+          package: ./app.jar   # FIX: relativer Pfad
