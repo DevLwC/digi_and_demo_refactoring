@@ -66,22 +66,25 @@ jobs:
       run: |
         # Get ACR login server
         ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
-        
+
+        az role assignment create \
+          --assignee "/subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }}" \
+          --role "AcrPull" \
+          --scope "/subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/$ACR_NAME"
+
         # Delete existing ACI if it exists
         az container delete --resource-group $RESOURCE_GROUP --name $ACI_NAME --yes || true
         
-        # Create new ACI with user-assigned identity
         az container create \
           --resource-group $RESOURCE_GROUP \
           --name $ACI_NAME \
           --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
-          --assign-identity /subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
+          --assign-identity "/subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }}" \
           --ports $APP_PORT \
           --dns-name-label $ACI_NAME-${{ github.run_number }} \
           --cpu 1 \
           --memory 1.5 \
           --restart-policy Always
-
 
     - name: Get Application URL
       run: |
