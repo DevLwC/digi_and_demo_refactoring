@@ -1,7 +1,17 @@
+// Fetch logged-in username once and use in handlers
+let loggedInUsername = null;
+
+document.addEventListener('DOMContentLoaded', async function () {
+    const res = await fetch('/api/auth/me');
+    if (!res.ok) return;
+    const user = await res.json();
+    loggedInUsername = user.username;
+});
+
 // Friend request
 document.getElementById('friendRequestForm').onsubmit = async function(e) {
     e.preventDefault();
-    const sender = document.getElementById('friendSender').value;
+    const sender = loggedInUsername;
     const receiver = document.getElementById('friendReceiver').value;
     const res = await fetch(`/api/friends/request?senderUsername=${encodeURIComponent(sender)}&receiverUsername=${encodeURIComponent(receiver)}`, {method: 'POST'});
     alert(res.ok ? 'Request sent!' : 'Error sending request');
@@ -10,7 +20,7 @@ document.getElementById('friendRequestForm').onsubmit = async function(e) {
 // Show pending requests
 document.getElementById('pendingRequestsForm').onsubmit = async function(e) {
     e.preventDefault();
-    const receiver = document.getElementById('pendingReceiver').value;
+    const receiver = loggedInUsername;
     const res = await fetch(`/api/friends/requests?receiverUsername=${encodeURIComponent(receiver)}`);
     const requests = await res.json();
     const ul = document.getElementById('pendingRequests');
@@ -51,6 +61,33 @@ document.getElementById('searchUserForm').onsubmit = async function(e) {
         const li = document.createElement('li');
         li.className = 'list-group-item';
         li.textContent = u.username + ' (' + u.email + ')';
+        ul.appendChild(li);
+    });
+};
+
+// Send chat message
+document.getElementById('sendMessageForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const sender = loggedInUsername;
+    const receiver = document.getElementById('chatReceiver').value;
+    const content = document.getElementById('chatContent').value;
+    const res = await fetch(`/api/chat/send?senderUsername=${encodeURIComponent(sender)}&receiverUsername=${encodeURIComponent(receiver)}&content=${encodeURIComponent(content)}`, {method: 'POST'});
+    alert(res.ok ? 'Message sent!' : 'Error sending message');
+};
+
+// Show chat
+document.getElementById('fetchChatForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const user1 = loggedInUsername;
+    const user2 = document.getElementById('chatUser2').value;
+    const res = await fetch(`/api/chat/messages?user1=${encodeURIComponent(user1)}&user2=${encodeURIComponent(user2)}`);
+    const messages = await res.json();
+    const ul = document.getElementById('chatMessages');
+    ul.innerHTML = '';
+    messages.forEach(m => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `<b>${m.sender.username}</b>: ${m.content} <br><small>${m.timestamp}</small>`;
         ul.appendChild(li);
     });
 };
