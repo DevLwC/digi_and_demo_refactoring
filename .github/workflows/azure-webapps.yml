@@ -62,50 +62,64 @@ jobs:
         docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }}
         docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
-    - name: Deploy to Azure Container Instance
-      env:
-        RESOURCE_GROUP: digi_and_demo
-        ACI_NAME: springboot-aci
-        ACR_NAME: ContainerRegistryPlayground
-        IMAGE_NAME: springboot-app
-        APP_PORT: 8080
-        MANAGED_IDENTITY_NAME: myManagedIdentity
-      run: |
-        set -e
-    
-        echo "🔹 Getting ACR login server..."
-        ACR_LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
-        echo "ACR login server: $ACR_LOGIN_SERVER"
-    
-        echo "🔹 Getting object ID of managed identity..."
-        IDENTITY_OBJECT_ID=$(az identity show \
-          --resource-group "$RESOURCE_GROUP" \
-          --name "$MANAGED_IDENTITY_NAME" \
-          --query principalId -o tsv)
-        echo "Managed Identity Object ID: $IDENTITY_OBJECT_ID"
-    
-        echo "🔹 Assigning AcrPull role..."
-        az role assignment create \
-          --assignee-object-id "$IDENTITY_OBJECT_ID" \
-          --role AcrPull \
-          --scope $(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv) || echo "Role assignment may already exist."
-    
-        echo "🔹 Deleting existing ACI if it exists..."
-        az container delete --resource-group "$RESOURCE_GROUP" --name "$ACI_NAME" --yes || true
-    
-        echo "🔹 Creating new ACI..."
-        az container create \
-          --resource-group "$RESOURCE_GROUP" \
-          --name "$ACI_NAME" \
-          --image "$ACR_LOGIN_SERVER/$IMAGE_NAME:latest" \
-          --assign-identity "/subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$MANAGED_IDENTITY_NAME" \
-          --ports "$APP_PORT" \
-          --dns-name-label "$ACI_NAME-${GITHUB_RUN_NUMBER}" \
-          --cpu 1 \
-          --memory 1.5 \
-          --restart-policy Always
-    
-        echo "✅ Deployment complete!"
+- name: Deploy to Azure Container Instance
+  env:
+    RESOURCE_GROUP: digi_and_demo
+    ACI_NAME: springboot-aci
+    ACR_NAME: ContainerRegistryPlayground
+    IMAGE_NAME: springboot-app
+    APP_PORT: 8080
+    MANAGED_IDENTITY_NAME: myManagedIdentity
+    LOCATION: westeurope
+  run: |
+    set -e
+
+    echo "🔹 Getting ACR login server..."
+    ACR_LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
+    echo "ACR login server: $ACR_LOGIN_SERVER"
+
+    echo "🔹 Ensuring managed identity exists..."
+    IDENTITY_OBJECT_ID=$(az identity show \
+      --name "$MANAGED_IDENTITY_NAME" \
+      --resource-group "$RESOURCE_GROUP" \
+      --query principalId -o tsv 2>/dev/null || true)
+
+    if [ -z "$IDENTITY_OBJECT_ID" ]; then
+      echo "Managed identity not found. Creating..."
+      IDENTITY_OBJECT_ID=$(az identity create \
+        --name "$MANAGED_IDENTITY_NAME" \
+        --resource-group "$RESOURCE_GROUP" \
+        --location "$LOCATION" \
+        --query principalId -o tsv)
+      echo "Managed identity created with object ID: $IDENTITY_OBJECT_ID"
+    else
+      echo "Managed identity exists with object ID: $IDENTITY_OBJECT_ID"
+    fi
+
+    echo "🔹 Assigning AcrPull role..."
+    az role assignment create \
+      --assignee-object-id "$IDENTITY_OBJECT_ID" \
+      --role AcrPull \
+      --scope $(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv) || \
+      echo "Role assignment may already exist."
+
+    echo "🔹 Deleting existing ACI if it exists..."
+    az container delete --resource-group "$RESOURCE_GROUP" --name "$ACI_NAME" --yes || true
+
+    echo "🔹 Creating new ACI..."
+    az container create \
+      --resource-group "$RESOURCE_GROUP" \
+      --name "$ACI_NAME" \
+      --image "$ACR_LOGIN_SERVER/$IMAGE_NAME:latest" \
+      --assign-identity "/subscriptions/73f0cece-ec82-4e19-a707-7ef7e30fde69/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$MANAGED_IDENTITY_NAME" \
+      --ports "$APP_PORT" \
+      --dns-name-label "$ACI_NAME-${GITHUB_RUN_NUMBER}" \
+      --cpu 1 \
+      --memory 1.5 \
+      --restart-policy Always
+
+    echo "✅ Deployment complete!"
+
 
     - name: Get Application URL
       run: |
