@@ -18,6 +18,12 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(columnDefinition = "integer default 0")
+    private int followersCount = 0;
+
+    @Column(columnDefinition = "integer default 0")
+    private int followingCount = 0;
+
     // Constructors
     public User() {}
 
@@ -39,5 +45,12 @@ public class User {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public int getFollowersCount() { return followersCount; }
+    public void setFollowersCount(int followersCount) { this.followersCount = followersCount; }
+
+    public int getFollowingCount() { return followingCount; }
+    public void setFollowingCount(int followingCount) { this.followingCount = followingCount; }
 }
+
 
