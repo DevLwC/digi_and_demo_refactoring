@@ -13,16 +13,16 @@ public class WebController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "pages/login";
     }
 
     @GetMapping("/register")
     public String register() {
-        return "register";
+        return "pages/register";
     }
 
     @GetMapping("/dashboard")
     public String dashboard() {
-        return "dashboard";
+        return "pages/dashboard";
     }
 }
