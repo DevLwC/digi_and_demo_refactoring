@@ -20,67 +20,70 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: maven
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
 
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
+    - name: Build with Maven
+      run: mvn clean package -DskipTests
 
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-      - name: Build and push Docker image
-        run: |
-          # Get ACR login server
-          ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
+    - name: Build and push Docker image
+      run: |
+        # Get ACR login server
+        ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
+        
+        # Build Docker image
+        docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} .
+        docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+        
+        # Login to ACR
+        az acr login --name $ACR_NAME
+        
+        # Push images
+        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }}
+        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
-          # Build Docker image
-          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} .
-          docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+    - name: Deploy to Azure Container Instance
+      run: |
+        # Get ACR login server
+        ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
+        
+        # Delete existing ACI if it exists (for updates)
+        az container delete --resource-group $RESOURCE_GROUP --name $ACI_NAME --yes || true
+        
+        # Create new ACI
+        az container create \
+          --resource-group $RESOURCE_GROUP \
+          --name $ACI_NAME \
+          --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
+          --acr-identity-resource-id /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
+          --assign-identity /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
+          --ports $APP_PORT \
+          --dns-name-label $ACI_NAME-${{ github.run_number }} \
+          --cpu 1 \
+          --memory 1.5 \
+          --restart-policy Always
 
-          # Login to ACR
-          az acr login --name $ACR_NAME
-
-          # Push images
-          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }}
-          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
-
-      - name: Deploy to Azure Container Instance
-        run: |
-          # Get ACR login server
-          ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer --output tsv)
-
-          # Delete existing ACI if it exists (for updates)
-          az container delete --resource-group $RESOURCE_GROUP --name $ACI_NAME --yes || true
-
-          # Create new ACI
-          az container create \
-            --resource-group $RESOURCE_GROUP \
-            --name $ACI_NAME \
-            --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
-            --acr-identity-resource-id /subscriptions/${{ vars.SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
-            --assign-identity /subscriptions/${{ vars.SUBSCRIPTION_ID }}/resourcegroups/$RESOURCE_GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/${{ vars.MANAGED_IDENTITY_NAME }} \
-            --ports $APP_PORT \
-            --dns-name-label $ACI_NAME-${{ github.run_number }} \
-            --cpu 1 \
-            --memory 1.5 \
-            --restart-policy Always
-
-      - name: Get Application URL
-        run: |
-          # Get the FQDN of the deployed container
-          FQDN=$(az container show --resource-group $RESOURCE_GROUP --name $ACI_NAME --query ipAddress.fqdn --output tsv)
-          echo "🚀 Application deployed successfully!"
-          echo "📱 Application URL: http://$FQDN:$APP_PORT"
-          echo "🔗 Access your Spring Boot app at: http://$FQDN:$APP_PORT"
+    - name: Get Application URL
+      run: |
+        # Get the FQDN of the deployed container
+        FQDN=$(az container show --resource-group $RESOURCE_GROUP --name $ACI_NAME --query ipAddress.fqdn --output tsv)
+        echo "🚀 Application deployed successfully!"
+        echo "📱 Application URL: http://$FQDN:$APP_PORT"
+        echo "🔗 Access your Spring Boot app at: http://$FQDN:$APP_PORT"
