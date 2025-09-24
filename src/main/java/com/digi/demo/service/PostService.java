@@ -19,6 +19,10 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElse(null);
+    }
+
     public List<Post> getPostsByFriends(List<User> friends) {
         return postRepository.findByAuthorInOrderByCreatedAtDesc(friends);
     }
