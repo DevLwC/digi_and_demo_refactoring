@@ -16,7 +16,7 @@ env:
   
   # Azure Container Instance
   RESOURCE_GROUP: digi_and_demo
-  ACI_NAME: springboot-aci
+  ACI_NAME: digi_and_demo_aci
   
   # Application settings
   APP_PORT: 8080
