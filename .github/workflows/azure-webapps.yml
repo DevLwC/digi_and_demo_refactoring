@@ -16,7 +16,7 @@ env:
   
   # Azure Container Instance
   RESOURCE_GROUP: digi_and_demo
-  ACI_NAME: digi_and_demo_aci
+  ACI_NAME: digi-and-demo-aci
   
   # Application settings
   APP_PORT: 8080
