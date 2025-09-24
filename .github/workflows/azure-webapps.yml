@@ -70,6 +70,7 @@ jobs:
         az container create \
           --resource-group $RESOURCE_GROUP \
           --name $ACI_NAME \
+          --os-type Linux \
           --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
           --registry-login-server $ACR_LOGIN_SERVER \
           --registry-username $ACR_USERNAME \
