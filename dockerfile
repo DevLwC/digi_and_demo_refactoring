@@ -1,31 +1,14 @@
-# Use Eclipse Temurin JRE 21 (lightweight and optimized for production)
-FROM eclipse-temurin:21-jre-alpine
-
-# Set working directory inside the container
+# Build Stage (optional, nur falls du direkt Maven bauen willst)
+FROM maven:3.9.2-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Create a non-root user for security
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
-
-# Copy the JAR file from your local target directory
-COPY target/app.jar app.jar
-
-# Change ownership of the app directory to the non-root user
-RUN chown -R appuser:appgroup /app
-
-# Switch to non-root user
-USER appuser
-
-# Expose the port your Spring Boot app runs on
+# Run Stage
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Set JVM options for better container performance
-ENV JAVA_OPTS="-Xmx512m -Xms256m -Djava.security.egd=file:/dev/./urandom"
-
-# Health check to ensure the application is running
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-
-# Run the application
+USER 1001:1001
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
