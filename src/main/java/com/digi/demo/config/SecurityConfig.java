@@ -1,5 +1,7 @@
 package com.digi.demo.config;
 
+import com.digi.demo.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,30 +14,38 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Disable CSRF for simplicity in this demo; not recommended for production
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/**",
-                                "/h2-console/**",
-                                "/**",
+                                "/",
                                 "/login",
                                 "/register",
-                                "/dashboard",
+                                "/api/auth/register",
+                                "/api/auth/login",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout.permitAll())
                 .headers(headers -> headers.frameOptions().disable()); // For H2 console
 
-        return http.build();
+        return http.userDetailsService(userDetailsService).build();
     }
 }

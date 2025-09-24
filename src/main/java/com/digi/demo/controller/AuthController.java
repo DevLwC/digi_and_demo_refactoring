@@ -5,6 +5,7 @@ import com.digi.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,6 +33,20 @@ public class AuthController {
         // Login logic will be implemented with Spring Security
         return ResponseEntity.ok("Login endpoint");
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Not authenticated");
+        }
+        String username = authentication.getName();
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+        return ResponseEntity.ok(user);
+    }
+
 
     // Inner classes for request DTOs
     public static class RegisterRequest {

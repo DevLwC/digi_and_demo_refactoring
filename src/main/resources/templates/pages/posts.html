@@ -12,20 +12,16 @@
     <h3>Posts</h3>
     <!-- Posts page content here -->
 
-    <div class="tab-pane fade" id="posts" role="tabpanel">
+    <div id="posts" role="tabpanel">
         <form id="createPostForm" class="mb-2">
             <input type="text" class="form-control mb-2" id="postAuthor" placeholder="Your username" required>
             <textarea class="form-control mb-2" id="postContent" placeholder="What's on your mind?" required></textarea>
             <button class="btn btn-primary w-100" type="submit">Create Post</button>
         </form>
-        <form id="fetchFeedForm" class="mb-2">
-            <input type="text" class="form-control mb-2" id="feedUsername" placeholder="Your username" required>
-            <button class="btn btn-secondary w-100" type="submit">Show Feed</button>
-        </form>
-        <ul id="postFeed" class="list-group"></ul>
     </div>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/app.js"></script>
+<script src="/pages/posts.js"></script>
 </body>
 </html>

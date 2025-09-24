@@ -16,22 +16,24 @@ async function handleLogin(e) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
     try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch('/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({ username, password })
+            body: formData
         });
 
         const message = document.getElementById('message');
-        if (response.ok) {
-            message.innerHTML = '<div class="alert alert-success">Login erfolgreich!</div>';
-            setTimeout(() => window.location.href = '/dashboard', 1000);
+        if (response.redirected || response.ok) {
+            window.location.href = '/dashboard';
         } else {
-            const error = await response.text();
-            message.innerHTML = `<div class="alert alert-danger">${error}</div>`;
+            message.innerHTML = `<div class="alert alert-danger">Login failed</div>`;
         }
     } catch (error) {
         console.error('Login error:', error);
