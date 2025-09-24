@@ -25,7 +25,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/**",
                                 "/h2-console/**",
-                                "/",
+                                "/**",
                                 "/login",
                                 "/register",
                                 "/dashboard",
