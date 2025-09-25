@@ -17,9 +17,6 @@ RUN chown -R appuser:appgroup /app
 # Switch to non-root user
 USER appuser
 
-# Expose the port your Spring Boot app runs on
-EXPOSE 8080
-
 # Set JVM options for better container performance
 ENV JAVA_OPTS="-Xmx512m -Xms256m -Djava.security.egd=file:/dev/./urandom"
 
