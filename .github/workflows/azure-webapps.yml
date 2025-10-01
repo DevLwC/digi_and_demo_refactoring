@@ -2,7 +2,7 @@ name: Build and Deploy Spring Boot App
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -13,10 +13,10 @@ env:
   # Azure Container Registry
   ACR_NAME: ContainerRegistryPlayground
   IMAGE_NAME: springboot-app
-  
+
   # Azure Container Instance
   RESOURCE_GROUP: digi_and_demo
-  ACI_NAME: digi-and-demo-aci
+  ACI_NAME: digi-and-demo-refactoring-aci
 
   # Hard-coded ACR credentials (replace with your real values)
   ACR_USERNAME: ContainerRegistryPlayground
@@ -25,61 +25,61 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn clean package -DskipTests
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
 
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        client-id: 26303757-7fd9-476d-a1e5-a17fa2349090
-        tenant-id: e51efa56-0625-4fc1-8dee-ca25181f21da
-        subscription-id: 73f0cece-ec82-4e19-a707-7ef7e30fde69
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: 26303757-7fd9-476d-a1e5-a17fa2349090
+          tenant-id: e51efa56-0625-4fc1-8dee-ca25181f21da
+          subscription-id: 73f0cece-ec82-4e19-a707-7ef7e30fde69
 
-    - name: Build and push Docker image
-      run: |
-        ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
-        docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} .
-        docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
-        docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME -p $ACR_PASSWORD
-        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }}
-        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+      - name: Build and push Docker image
+        run: |
+          ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} .
+          docker tag $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }} $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
+          docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME -p $ACR_PASSWORD
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:${{ github.sha }}
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest
 
-    - name: Deploy to Azure Container Instance
-      run: |
-        ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
-        
-        # Delete existing ACI if exists
-        az container delete --resource-group $RESOURCE_GROUP --name $ACI_NAME --yes || true
+      - name: Deploy to Azure Container Instance
+        run: |
+          ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
 
-        # Create new ACI using ACR credentials
-        az container create \
-          --resource-group $RESOURCE_GROUP \
-          --name $ACI_NAME \
-          --os-type Linux \
-          --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
-          --registry-login-server $ACR_LOGIN_SERVER \
-          --registry-username $ACR_USERNAME \
-          --registry-password $ACR_PASSWORD \
-          --ports 80 443 \
-          --dns-name-label $ACI_NAME \
-          --cpu 1 \
-          --memory 1.5 \
-          --restart-policy Always
+          # Delete existing ACI if exists
+          az container delete --resource-group $RESOURCE_GROUP --name $ACI_NAME --yes || true
 
-    - name: Get Application URL
-      run: |
-        FQDN=$(az container show --resource-group $RESOURCE_GROUP --name $ACI_NAME --query ipAddress.fqdn -o tsv)
-        echo "🚀 Application deployed successfully!"
-        echo "📱 Application URL: http://$FQDN"
+          # Create new ACI using ACR credentials
+          az container create \
+            --resource-group $RESOURCE_GROUP \
+            --name $ACI_NAME \
+            --os-type Linux \
+            --image $ACR_LOGIN_SERVER/$IMAGE_NAME:latest \
+            --registry-login-server $ACR_LOGIN_SERVER \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
+            --ports 80 443 \
+            --dns-name-label $ACI_NAME \
+            --cpu 1 \
+            --memory 1.5 \
+            --restart-policy Always
+
+      - name: Get Application URL
+        run: |
+          FQDN=$(az container show --resource-group $RESOURCE_GROUP --name $ACI_NAME --query ipAddress.fqdn -o tsv)
+          echo "🚀 Application deployed successfully!"
+          echo "📱 Application URL: http://$FQDN"
