@@ -4,7 +4,7 @@ import React from 'react'
             function Navbar() {
               return (
                 <nav className="navbar fixed-bottom bg-light border-top d-flex justify-content-center" style={{ height: '60px' }}>
-                  <ul className="nav w-100 justify-content-between align-items-center px-3" style={{ fontSize: '1.5rem' }}>
+                  <ul className="nav d-flex flex-row w-100 justify-content-between align-items-center px-3" style={{ fontSize: '1.5rem' }}>
                     <li className="nav-item">
                       <Link className="nav-link text-dark" to="/dashboard">
                         <i className="bi bi-house"></i>
