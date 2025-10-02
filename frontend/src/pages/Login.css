@@ -51,10 +51,25 @@
     font-size: 1.5rem;
 }
 
-.decor-leaf-top-left { top: 18px; left: 18px; }
-.decor-leaf-bottom-left { bottom: 18px; left: 18px; }
-.decor-leaf-bottom-right { bottom: 18px; right: 18px; }
-.decor-cloud-top-right { top: 18px; right: 18px; }
+.decor-leaf-top-left {
+    top: 18px;
+    left: 18px;
+}
+
+.decor-leaf-bottom-left {
+    bottom: 18px;
+    left: 18px;
+}
+
+.decor-leaf-bottom-right {
+    bottom: 18px;
+    right: 18px;
+}
+
+.decor-cloud-top-right {
+    top: 18px;
+    right: 18px;
+}
 
 .login-title {
     color: #355c35;
@@ -133,26 +148,32 @@
         font-size: 1.5rem;
         margin-bottom: 24px;
     }
+
     .login-card {
         padding: 24px 12px 20px 12px;
         max-width: 95vw;
     }
+
     .login-title {
         font-size: 1.2rem;
         margin-bottom: 18px;
     }
+
     .login-input {
         font-size: 0.95rem;
         padding: 10px 12px;
         margin-bottom: 12px;
     }
+
     .login-btn {
         font-size: 1rem;
         padding: 10px 0;
     }
+
     .login-card-decor {
         font-size: 1.1rem;
     }
+
     .logo-img {
         width: 64vw;
         min-width: 128px;

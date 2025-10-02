@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import './Login.css'
-import { API_BASE_URL } from '../config.js'
+import {API_BASE_URL} from '../config.js'
 import {useNavigate} from "react-router-dom";
 
 function Login() {
@@ -15,13 +15,13 @@ function Login() {
         e.preventDefault()
         const url = isRegister ? `${API_BASE_URL}/api/auth/register` : `${API_BASE_URL}/api/auth/login`
         const payload = isRegister
-            ? { username, email, password }
-            : { username: email, password } // Assuming login uses email as username
+            ? {username, email, password}
+            : {username: email, password} // Assuming login uses email as username
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
             })
             const data = await response.text()
@@ -40,7 +40,7 @@ function Login() {
         <div className="login-bg">
             <div className="login-center-container">
                 <div className="login-logo">
-                    <img src="/Lumina.png" alt="Nexus Logo" className="logo-img" />
+                    <img src="/Lumina.png" alt="Nexus Logo" className="logo-img"/>
                 </div>
                 <div className="login-card">
                     <div className="login-card-decor decor-leaf-top-left">🍃</div>
@@ -84,7 +84,7 @@ function Login() {
                     <div
                         className="login-register"
                         onClick={() => setIsRegister(!isRegister)}
-                        style={{ textDecoration: 'underline' }}
+                        style={{textDecoration: 'underline'}}
                     >
                         {isRegister ? "Back to Login" : "Register"}
                     </div>
