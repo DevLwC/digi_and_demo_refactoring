@@ -1,91 +1,202 @@
-import React from "react";
-import Navbar from "../components/Navbar"; // Adjust the path if needed
-import './Profile.css';
+import React from "react"
+import Navbar from "../components/Navbar.jsx"
+import "./Profile.css"
 
-function Profile() {
+export default function Profile() {
+    // Replace with your real data / props
     const user = {
-        username: "NiklasStinkt",
-        displayName: "Niklas Stinkt",
-        followersCount: 129,
-        followingCount: 94,
-        status: "Seed",
+        name: "Niklas Stinkt",
+        handle: "@niklasson",
+        bio: "Blau macht schlau",
+        location: "Hamburg, DE",
+        link: "https://niklasson.com",
+        joined: "Joined 2025",
+        followers: 5000,
+        following: 3,
+        status: {label: "Seed", icon: "🌿"},
     };
 
+    const tabs = [
+        {key: "posts", label: "Posts"},
+        {key: "bookmarks", label: "Bookmarks"},
+        {key: "replies", label: "Replies"},
+    ];
+
+    const [active, setActive] = React.useState("posts");
+
     return (
-        <div className="profile-container">
-            {/* Top navigation bar */}
-            <div className="profile-navbar d-flex align-items-center justify-content-between px-3 py-2">
-                <div className="d-flex align-items-center gap-2">
-                    <div className="brand-icon">
-                        <span role="img" aria-label="leaf">🌿</span>
-                    </div>
-                    <span className="brand-text">Nexus</span>
-                </div>
-                <button className="icon-circle btn btn-light p-0" aria-label="Settings">
-                    {/* settings icon */}
-                </button>
-            </div>
+        <main className="profile" role="main">
+            {/* Header card */}
+            <section className="card card--header" aria-label="Profile header">
+                <div className="header__row">
+                    <div className="header__left">
+                        {/* Animal avatar (Fox) */}
+                        <div className="avatar avatar--animal" aria-hidden="true">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 64 64"
+                                width="88"
+                                height="88"
+                                role="img"
+                                aria-label="Fox avatar"
+                            >
+                                <circle
+                                    cx="32"
+                                    cy="32"
+                                    r="30"
+                                    fill="#fff7f0"
+                                    stroke="#e67e22"
+                                    strokeWidth="3"
+                                />
+                                <path
+                                    d="M20 24c2-6 10-10 12-10s10 4 12 10c0 8-4 18-12 18S20 32 20 24z"
+                                    fill="#f39c12"
+                                    stroke="#d35400"
+                                    strokeWidth="2"
+                                />
+                                <circle cx="26" cy="28" r="3" fill="#2c3e50"/>
+                                <circle cx="38" cy="28" r="3" fill="#2c3e50"/>
+                                <path
+                                    d="M28 38c2 2 6 2 8 0"
+                                    stroke="#2c3e50"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                                {/* ears */}
+                                <path
+                                    d="M24 18l-6-6M40 18l6-6"
+                                    stroke="#d35400"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                        </div>
 
-            {/* Profile header with background */}
-            <div className="profile-header-bg">
-                <div className="avatar-outline profile-avatar">
-                    {/* avatar svg or image */}
-                </div>
-            </div>
-
-            {/* Profile info card */}
-            <div className="profile-info-card">
-                <div className="profile-displayname">{user.displayName}</div>
-                <div className="profile-username">@{user.username}</div>
-                <div className="profile-status-row">
-                    <span className="text-muted">{user.status}</span>
-                    <span className="status-badge d-inline-flex align-items-center justify-content-center">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                            <path d="M12 21s-7-4.4-7-10a7 7 0 0 1 14 0c0 5.6-7 10-7 10Z"
-                                                  stroke="#5a845c" strokeWidth="2"/>
-                                        </svg>
-                                    </span>
-                </div>
-                <div className="profile-stats-row">
-                    <div className="profile-stat">
-                        <div className="profile-stat-value">{user.followersCount}</div>
-                        <div className="profile-stat-label">Followers</div>
+                        <div className="identity">
+                            <h1 className="identity__name">{user.name}</h1>
+                            <div className="identity__meta">
+                                <span className="handle">{user.handle}</span>
+                                <span
+                                    className="badge"
+                                    aria-label={`Status: ${user.status.label}`}
+                                >
+                          <span className="badge__icon" role="img" aria-hidden="true">
+                            {user.status.icon}
+                          </span>
+                                    {user.status.label}
+                        </span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="profile-stat">
-                        <div className="profile-stat-value">{user.followingCount}</div>
-                        <div className="profile-stat-label">Following</div>
+
+                    <div className="header__actions">
+                        <button className="btn btn--ghost" type="button">Share</button>
+                        <button className="btn btn--primary" type="button">Follow</button>
                     </div>
                 </div>
-                <button className="edit-profile-btn">Edit Profile</button>
-            </div>
 
-            {/* Tabs */}
-            <div className="d-flex justify-content-center gap-5 mt-4 mb-2">
-                <button className="tab-icon active" aria-label="Grid">
-                    {/* grid icon */}
-                </button>
-                <button className="tab-icon" aria-label="Bookmarks">
-                    {/* bookmark icon */}
-                </button>
-                <button className="tab-icon" aria-label="Messages">
-                    {/* message icon */}
-                </button>
-            </div>
-            <div className="border-top mb-3"/>
-            <div className="d-flex flex-column gap-3 mb-5">
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className="skeleton-card rounded-4 p-3">
-                        <div className="skeleton-line mb-2"/>
-                        <div className="skeleton-line w-75 mb-2"/>
-                        <div className="skeleton-line w-50"/>
+                <p className="bio">{user.bio}</p>
+
+                <ul className="facts" aria-label="Profile details">
+                    <li>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                            <path
+                                d="M12 2C8 2 4.6 4.8 4.1 8.7c-.5 3.7 1.6 6.2 3.4 8.1L12 21l4.5-4.2c1.8-1.9 3.9-4.4 3.4-8.1C19.4 4.8 16 2 12 2Z"
+                                stroke="currentColor"
+                                fill="none"
+                                strokeWidth="1.6"
+                            />
+                        </svg>
+                        {user.location}
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                            <path
+                                d="M4 12a8 8 0 0 1 16 0c0 4.4-3.6 8-8 8-1.7 0-3.3-.5-4.6-1.4L4 21l1.4-3.4A7.9 7.9 0 0 1 4 12Z"
+                                stroke="currentColor"
+                                fill="none"
+                                strokeWidth="1.6"
+                            />
+                        </svg>
+                        <a href={user.link} target="_blank" rel="noreferrer">
+                            {user.link.replace(/^https?:\/\//, "")}
+                        </a>
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                            <path
+                                d="M8 7V3m8 4V3M4 11h16M6 5h0m12 14H6a2 2 0 0 1-2-2V7h16v10a2 2 0 0 1-2 2Z"
+                                stroke="currentColor"
+                                fill="none"
+                                strokeWidth="1.6"
+                            />
+                        </svg>
+                        {user.joined}
+                    </li>
+                </ul>
+
+                <div className="stats" role="group" aria-label="Follow stats">
+                    <div className="stat">
+                        <div className="stat__value">{user.followers}</div>
+                        <div className="stat__label">Followers</div>
                     </div>
-                ))}
-            </div>
+                    <div className="stat">
+                        <div className="stat__value">{user.following}</div>
+                        <div className="stat__label">Following</div>
+                    </div>
+                </div>
 
-            {/* Bottom Navbar */}
+                <nav className="tabs" aria-label="Profile sections">
+                    {tabs.map((t) => (
+                        <button
+                            key={t.key}
+                            className={`tab ${active === t.key ? "is-active" : ""}`}
+                            aria-current={active === t.key ? "page" : undefined}
+                            onClick={() => setActive(t.key)}
+                            type="button"
+                        >
+                            {t.label}
+                        </button>
+                    ))}
+                </nav>
+            </section>
+
+            {/* Content area */}
+            <section className="content">
+                {active === "posts" && (
+                    <div className="grid">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <article key={i} className="post card">
+                                <div className="post__media skeleton"/>
+                                <div className="post__body">
+                                    <div className="skeleton skeleton--line"/>
+                                    <div className="skeleton skeleton--line w-70"/>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+
+                {active === "bookmarks" && (
+                    <div className="empty">
+                        <h3>No bookmarks yet</h3>
+                        <p>Save posts to find them here later.</p>
+                        <button className="btn btn--ghost" type="button">Explore</button>
+                    </div>
+                )}
+
+                {active === "replies" && (
+                    <div className="list">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="card list__item">
+                                <div className="skeleton skeleton--line"/>
+                                <div className="skeleton skeleton--line w-80"/>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
             <Navbar/>
-        </div>
+        </main>
     );
 }
-
-export default Profile;
