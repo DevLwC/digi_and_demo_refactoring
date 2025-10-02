@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import './Login.css'
+import { API_BASE_URL } from '../config.js'
+import {useNavigate} from "react-router-dom";
 
 function Login() {
     const [isRegister, setIsRegister] = useState(false)
@@ -7,21 +9,38 @@ function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
+    const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setMessage(isRegister ? 'Registration not implemented yet.' : 'Login not implemented yet.')
+        const url = isRegister ? `${API_BASE_URL}/api/auth/register` : `${API_BASE_URL}/api/auth/login`
+        const payload = isRegister
+            ? { username, email, password }
+            : { username: email, password } // Assuming login uses email as username
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            const data = await response.text()
+            if (response.ok) {
+                setMessage(data)
+                navigate('/dashboard')
+            } else {
+                setMessage(data)
+            }
+        } catch (err) {
+            setMessage('Network error')
+        }
     }
 
     return (
         <div className="login-bg">
             <div className="login-center-container">
                 <div className="login-logo">
-                    <img
-                        src="/Lumina.png"
-                        alt="Nexus Logo"
-                        className="logo-img"
-                    />
+                    <img src="/Lumina.png" alt="Nexus Logo" className="logo-img" />
                 </div>
                 <div className="login-card">
                     <div className="login-card-decor decor-leaf-top-left">🍃</div>
@@ -77,4 +96,3 @@ function Login() {
 }
 
 export default Login
-
