@@ -1,0 +1,29 @@
+.Friends {
+    font-family: Arial, sans-serif;
+}
+
+.TabBar {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 16px;
+}
+
+.TabBar button {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.TabBar button.active {
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.TabContent {
+    padding: 16px;
+}

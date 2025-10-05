@@ -52,7 +52,7 @@ function Store() {
                 <div className="store-header__balance">
                     <img src="/shop/currency.png" alt="Currency" className="store-header__currency"/>
                     <span className="store-header__amount">{balance}</span>
-                    <img src="/assets/shop/settings.svg" alt="Settings" className="store-header__settings"/>
+                    {/*<img src="/assets/shop/settings.svg" alt="Settings" className="store-header__settings"/>*/}
                 </div>
             </div>
             {/* Title */}
