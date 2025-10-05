@@ -42,6 +42,7 @@ const items = [
 ]
 
 function Store() {
+    // TODO: balance and item purchase logic
     const balance = 225
 
     return (
@@ -49,7 +50,7 @@ function Store() {
             {/* Header */}
             <div className="store-header">
                 <div className="store-header__balance">
-                    <img src="/assets/shop/currency.svg" alt="Currency" className="store-header__currency"/>
+                    <img src="/shop/currency.png" alt="Currency" className="store-header__currency"/>
                     <span className="store-header__amount">{balance}</span>
                     <img src="/assets/shop/settings.svg" alt="Settings" className="store-header__settings"/>
                 </div>
@@ -59,6 +60,7 @@ function Store() {
                 <h2 className="store-title__text">COSMETIC STORE</h2>
             </div>
             {/* Store Grid */}
+            {/* TODO: the whole screen is scrollable, but only the grid container with the items should be*/}
             <div className="store-grid-container">
                 <div className="store-grid">
                     {items.map(item => (
@@ -71,7 +73,7 @@ function Store() {
                             <img src={item.image} alt={item.title} className="store-item__image"/>
                             <div className="store-item__title">{item.title}</div>
                             <div className="store-item__price">
-                                <img src="/assets/shop/currency.svg" alt="Currency" className="store-item__currency"/>
+                                <img src="/shop/currency.png" alt="Currency" className="store-item__currency"/>
                                 <span>{item.amount} ORO</span>
                             </div>
                         </button>
