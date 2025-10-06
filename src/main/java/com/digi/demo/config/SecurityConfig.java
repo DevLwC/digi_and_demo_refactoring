@@ -26,6 +26,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(request -> {
+                            String remoteAddr = request.getRemoteAddr();
+                            return "127.0.0.1".equals(remoteAddr) || "0:0:0:0:0:0:0:1".equals(remoteAddr) || "localhost".equals(request.getServerName());
+                        }).permitAll()
                         .requestMatchers(
                                 "/",
                                 "/login",
