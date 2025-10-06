@@ -95,14 +95,14 @@ public class AIValidationService {
                 
                 Antworte ausschließlich im folgenden JSON-Format:
                 {
-                    "isValid": boolean,
+                    "valid": boolean,
                     "emotionalIntelligence": number (0-100),
                     "violationReasons": [string],
                     "confidence": number (0.0-1.0)
                 }
                 
                 Erklärung der Felder:
-                - isValid: true wenn der Text akzeptabel ist, false wenn er verbotene Inhalte enthält
+                - valid: true wenn der Text akzeptabel ist, false wenn er verbotene Inhalte enthält
                 - emotionalIntelligence: Bewertung der emotionalen Intelligenz (0-100)
                 - violationReasons: Liste der Gründe bei Ablehnung
                 - confidence: Konfidenz deiner Bewertung (0.0-1.0)
@@ -143,7 +143,7 @@ public class AIValidationService {
                     
                     Antworte ausschließlich im folgenden JSON-Format:
                     {
-                        "isValid": boolean,
+                        "valid": boolean,
                         "violationReasons": [
                             "Detaillierte Erklärungen zu gefundenen faktischen Unstimmigkeiten"
                         ],
@@ -151,7 +151,7 @@ public class AIValidationService {
                     }
                     
                     Wobei:
-                    - isValid: true wenn alle überprüfbaren Fakten korrekt sind, false wenn Falschinformationen gefunden wurden
+                    - valid: true wenn alle überprüfbaren Fakten korrekt sind, false wenn Falschinformationen gefunden wurden
                     - violationReasons: Liste mit detaillierten Erklärungen zu faktischen Unstimmigkeiten
                     - confidence: Konfidenz in die faktische Bewertung (0.0-1.0)
                     """.formatted(content))
