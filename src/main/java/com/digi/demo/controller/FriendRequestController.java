@@ -17,9 +17,9 @@ public class FriendRequestController {
     private UserRepository userRepository;
 
     @PostMapping("/request")
-    public FriendRequest sendRequest(@RequestParam String senderUsername, @RequestParam String receiverUsername) {
-        User sender = userRepository.findByUsername(senderUsername).orElseThrow();
-        User receiver = userRepository.findByUsername(receiverUsername).orElseThrow();
+    public FriendRequest sendRequest(@RequestBody FriendRequestDto requestDto) {
+        User sender = userRepository.findByUsername(requestDto.getSenderUsername()).orElseThrow();
+        User receiver = userRepository.findByUsername(requestDto.getReceiverUsername()).orElseThrow();
         return friendRequestService.sendRequest(sender, receiver);
     }
 
@@ -39,5 +39,16 @@ public class FriendRequestController {
     public List<FriendRequest> getFriends(@RequestParam String username) {
         User user = userRepository.findByUsername(username).orElseThrow();
         return friendRequestService.getFriends(user);
+    }
+
+
+    public static class FriendRequestDto {
+        private String senderUsername;
+        private String receiverUsername;
+
+        public String getSenderUsername() { return senderUsername; }
+        public void setSenderUsername(String senderUsername) { this.senderUsername = senderUsername; }
+        public String getReceiverUsername() { return receiverUsername; }
+        public void setReceiverUsername(String receiverUsername) { this.receiverUsername = receiverUsername; }
     }
 }
