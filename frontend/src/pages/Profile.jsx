@@ -99,7 +99,7 @@ const AnimalAvatars = {
 // 2. Add avatarAnimal to user
 export default function Profile() {
     const user = {
-        name: "Niklas Stinkt",
+        name: localStorage.getItem('username'),
         handle: "@niklasson",
         bio: "🌍✨ Decolonizing my mind daily | queer, neurodivergent, eco-conscious anti-capitalist dreamer | amplifying marginalized voices & thriving in radical softness 🌱💜",
         location: "Hamburg, DE",
