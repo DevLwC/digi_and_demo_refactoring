@@ -24,10 +24,19 @@ public class FriendRequestController {
     }
 
     @GetMapping("/requests")
-    public List<FriendRequest> getPendingRequests(@RequestParam String receiverUsername) {
+    public List<FriendRequestResponseDto> getPendingRequests(@RequestParam String receiverUsername) {
         User receiver = userRepository.findByUsername(receiverUsername).orElseThrow();
-        return friendRequestService.getPendingRequests(receiver);
+        List<FriendRequest> requests = friendRequestService.getPendingRequests(receiver);
+        return requests.stream()
+                .map(req -> new FriendRequestResponseDto(
+                        req.getId(),
+                        req.getSender().getUsername(),
+                        req.getSender().getEmail(),
+                        req.getStatus().name()
+                ))
+                .toList();
     }
+
 
     @PostMapping("/respond")
     public FriendRequest respondToRequest(@RequestParam Long requestId, @RequestParam String status) {
@@ -51,4 +60,26 @@ public class FriendRequestController {
         public String getReceiverUsername() { return receiverUsername; }
         public void setReceiverUsername(String receiverUsername) { this.receiverUsername = receiverUsername; }
     }
+
+
+    public static class FriendRequestResponseDto {
+        private Long id;
+        private String username;
+        private String email;
+        private String status;
+
+        public FriendRequestResponseDto(Long id, String username, String email, String status) {
+            this.id = id;
+            this.username = username;
+            this.email = email;
+            this.status = status;
+        }
+
+        public Long getId() { return id; }
+        public String getUsername() { return username; }
+        public String getEmail() { return email; }
+        public String getStatus() { return status; }
+    }
+
+
 }

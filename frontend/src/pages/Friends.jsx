@@ -40,6 +40,28 @@ export async function getPendingRequests(receiverUsername) {
     if (!res.ok) throw new Error('Failed to get pending requests');
     return await res.json();
 }
+export async function respondToFriendRequest(requestId, status) {
+    const res = await fetch(`${API_BASE_URL}/api/friends/respond?requestId=${requestId}&status=${status}`, {
+        method: 'POST',
+        credentials: 'include'
+    });
+    if (!res.ok) throw new Error('Failed to respond to request');
+    return await res.json();
+}
+
+
+// TODO: make an api call to get the profile pricture for the displaying
+function getAvatar(avatarUrl, username) {
+    if (avatarUrl) {
+        return <img src={avatarUrl} alt={username} className="RequestAvatar" />;
+    }
+    // Placeholder: use emoji or a default image
+    return (
+        <div className="RequestAvatar" style={{ fontSize: 32 }}>
+            🧑‍🦱
+        </div>
+    );
+}
 
 function Friends() {
     const [activeTab, setActiveTab] = useState('chats');
@@ -103,6 +125,18 @@ function Friends() {
             setSendRequestStatus('Request sent!');
         } catch (err) {
             setRequestError(err.message);
+        }
+    };
+
+    // In Friends component
+    const handleRespondToRequest = async (requestId, status) => {
+        try {
+            await respondToFriendRequest(requestId, status);
+            // Refresh requests
+            const updated = await getPendingRequests(localStorage.getItem('username'));
+            setPendingRequests(updated);
+        } catch (err) {
+            setRequestError('Failed to respond to request');
         }
     };
 
@@ -177,11 +211,30 @@ function Friends() {
                         </button>
                         {sendRequestStatus && <div style={{ color: 'green' }}>{sendRequestStatus}</div>}
                         {requestError && <div style={{ color: 'red' }}>{requestError}</div>}
-                        <ul className="list-group">
+                        <div>
                             {pendingRequests.map((req, idx) => (
-                                <li key={idx} className="list-group-item">{req.username || JSON.stringify(req)}</li>
+                                <div key={idx} className="RequestCard">
+                                    {getAvatar(req.avatarUrl, req.username)}
+                                    <div className="RequestInfo">
+                                        <div className="RequestName">{req.username}</div>
+                                        <div className="RequestUsername">{req.email}</div>
+                                        <div className="RequestTime">{req.time ? timeAgo(req.time) : "just now"}</div>
+                                    </div>
+                                    <div className="RequestActions">
+                                        <button
+                                            className="RequestBtn"
+                                            title="Accept"
+                                            onClick={() => handleRespondToRequest(req.id, "ACCEPTED")}
+                                        >&#10003;</button>
+                                        <button
+                                            className="RequestBtn decline"
+                                            title="Decline"
+                                            onClick={() => handleRespondToRequest(req.id, "DECLINED")}
+                                        >&#10005;</button>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 )}
             </div>

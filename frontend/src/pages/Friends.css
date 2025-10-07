@@ -56,3 +56,97 @@
 .TabContent {
     padding: 16px;
 }
+.RequestsHeader {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.RequestCount {
+    background: #18192b;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 14px;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+.RequestCard {
+    display: flex;
+    align-items: center;
+    background: #e9ebef;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: none;
+    min-height: 80px;
+}
+
+.RequestAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    overflow: hidden;
+}
+
+.RequestInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.RequestName {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 2px;
+    color: #0f172a;
+}
+
+.RequestUsername {
+    color: #667085;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.RequestTime {
+    color: #667085;
+    font-size: 13px;
+}
+
+.RequestActions {
+    display: flex;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+.RequestBtn {
+    background: #18192b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+
+.RequestBtn.decline {
+    background: #fff;
+    color: #18192b;
+    border: 1px solid #e5e7eb;
+}
