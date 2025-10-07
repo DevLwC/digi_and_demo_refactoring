@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.Map;
 
+// TODO: implement a logout endpoint that invalidates the session
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -66,6 +66,7 @@ public class AuthController {
         }
     }
 
+    // TODO: the hashed password shouldn't be exposed in the response
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
