@@ -13,7 +13,7 @@ function AppContent() {
     const location = useLocation()
     return (
         <>
-            {location.pathname !== "/login" && <Logo/>}
+            {location.pathname !== "/login" && location.pathname !== "/friends" && <Logo/>}
             <div style={{paddingBottom: '60px'}}>
                 <Routes>
                     <Route path="/" element={<Dashboard/>}/>

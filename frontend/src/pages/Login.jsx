@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import './Login.css'
 import {API_BASE_URL} from '../config.js'
 import {useNavigate} from "react-router-dom";
+import {getCurrentUser} from "../api/auth.js";
 
 function Login() {
     const [isRegister, setIsRegister] = useState(false)
@@ -16,23 +17,36 @@ function Login() {
         const url = isRegister ? `${API_BASE_URL}/api/auth/register` : `${API_BASE_URL}/api/auth/login`
         const payload = isRegister
             ? {username, email, password}
-            : {username: email, password} // Assuming login uses email as username
+            : {username, password}
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            })
-            const data = await response.text()
+                body: JSON.stringify(payload),
+                credentials: 'include'
+            });
+            let data;
+            try {
+                data = await response.json();
+            } catch {
+                setMessage(`Server error (${response.status})`);
+                return;
+            }
             if (response.ok) {
-                setMessage(data)
-                navigate('/dashboard')
+                setMessage(data.message);
+                try {
+                    const user = await getCurrentUser();
+                    localStorage.setItem('username', user.username);
+                    navigate('/dashboard');
+                } catch (err) {
+                    setMessage(err.message);
+                }
             } else {
-                setMessage(data)
+                setMessage(data.error || `Error ${response.status}: ${response.statusText}`);
             }
         } catch (err) {
-            setMessage('Network error')
+            setMessage(err.message || 'Network error');
         }
     }
 
@@ -51,24 +65,24 @@ function Login() {
                         {isRegister ? "Create Account" : "Welcome Back"}
                     </h2>
                     <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            className="login-input"
+                            placeholder="Username"
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            required
+                        />
                         {isRegister && (
                             <input
                                 type="text"
                                 className="login-input"
-                                placeholder="Username"
-                                value={username}
-                                onChange={e => setUsername(e.target.value)}
+                                placeholder="Email address"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
                                 required
                             />
                         )}
-                        <input
-                            type="text"
-                            className="login-input"
-                            placeholder="Email address"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                        />
                         <input
                             type="password"
                             className="login-input"
