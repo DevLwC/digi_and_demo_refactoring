@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './Friends.css';
 import { API_BASE_URL } from '../config.js';
 
-// API functions (already implemented)
 export async function searchUsers(username) {
-    const res = await fetch(`${API_BASE_URL}/api/users/search?username=${encodeURIComponent(username)}`);
+    const res = await fetch(`${API_BASE_URL}/api/users/search?username=${encodeURIComponent(username)}`, {
+        method: "GET",
+        credentials: "include"
+    });
     if (!res.ok) throw new Error('Failed to search users');
     return await res.json();
 }
+
 
 export async function sendChatMessage(receiver, message) {
     const res = await fetch(`${API_BASE_URL}/api/chat/send`, {
@@ -139,7 +142,21 @@ function Friends() {
             setRequestError('Failed to respond to request');
         }
     };
+    const searchTimeout = useRef();
 
+    const handleSearchInput = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        setSearchError('');
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            if (value.trim()) {
+                handleSearch();
+            } else {
+                setSearchResults([]);
+            }
+        }, 300); // 300ms debounce
+    };
 
     return (
         <div className="Friends">
@@ -184,15 +201,27 @@ function Friends() {
                             className="form-control mb-2"
                             placeholder="Search username"
                             value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={handleSearchInput}
                         />
-                        <button className="btn btn-primary mb-2" onClick={handleSearch}>
-                            Search Users
-                        </button>
                         {searchError && <div style={{ color: 'red' }}>{searchError}</div>}
                         <ul className="list-group mb-4">
                             {searchResults.map((user, idx) => (
-                                <li key={idx} className="list-group-item">{user.username || JSON.stringify(user)}</li>
+                                <div className="SearchResultCard">
+                                    <div className="SearchResultAvatar">
+                                        {/* Avatar image or emoji */}
+                                        <img src={getAvatar(user.username)} alt={user.username} />
+                                    </div>
+                                    <div className="SearchResultInfo">
+                                        <div className="SearchResultName">{user.username}</div>
+                                    </div>
+                                    {user.isFriend ? (
+                                        <div className="SearchResultStatus">✓ Friend</div>
+                                    ) : (
+                                        <button className="SearchResultBtn">
+                                            <span role="img" aria-label="add">👥</span> Add
+                                        </button>
+                                    )}
+                                </div>
                             ))}
                         </ul>
                     </div>
