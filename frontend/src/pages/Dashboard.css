@@ -1,0 +1,141 @@
+.dashboard-bg {
+    min-height: 100vh;
+    width: 100vw;
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-center-container {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 16px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.dashboard__welcome {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    padding: 20px 24px;
+}
+
+.dashboard__avatar {
+    flex-shrink: 0;
+}
+
+.dashboard__greeting {
+    font-size: 1.3rem;
+    margin: 0 0 4px;
+    color: var(--text);
+}
+
+.dashboard__name {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.dashboard__streak {
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+.dashboard__notifications .badge {
+    font-size: 0.9rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 6px 14px;
+}
+
+.dashboard__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    width: 100%;
+}
+
+.stat {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+    border-radius: 20px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.dashboard__activity {
+    padding: 18px 20px;
+}
+
+.dashboard__activity h3 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.dashboard__activity ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard__activity li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-size: 1rem;
+}
+
+.dashboard__activity-icon {
+    font-size: 1.2em;
+}
+
+@media (max-width: 700px) {
+    .dashboard {
+        max-width: 98vw;
+        padding: 8px 2vw 48px;
+    }
+
+    .dashboard__stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dashboard__welcome {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard__shortcuts {
+        gap: 8px;
+    }
+}
+
+.dashboard__feed .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 0;
+}
