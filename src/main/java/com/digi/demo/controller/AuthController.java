@@ -60,6 +60,11 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             httpRequest.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+            User user = userService.findByUsername(request.getUsername());
+            if (user != null) {
+                userService.updateLoginStreak(user);
+            }
             return ResponseEntity.ok().body(Map.of("message", "Login successful"));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));

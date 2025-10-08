@@ -3,6 +3,7 @@ package com.digi.demo.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
@@ -32,9 +33,15 @@ public class User {
     private int followingCount = 0;
 
     private String location;
+
+    private int streakCount = 0;
+
+    private LocalDateTime lastLoginDate;
+
     // Constructors
     public User() {
         this.createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        this.lastLoginDate = LocalDateTime.now();
         // the default location can be changed based on the ip adress, but that requires some extra backend work
         this.location = "Hamburg, DE";
     }
@@ -44,6 +51,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        this.lastLoginDate = LocalDateTime.now();
         // the default location can be changed based on the ip adress, but that requires some extra backend work
         this.location = "Hamburg, DE";
     }
@@ -74,6 +82,12 @@ public class User {
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location;}
+
+    public int getStreakCount() { return streakCount; }
+    public void setStreakCount(int streakCount) { this.streakCount = streakCount; }
+
+    public LocalDateTime getLastLoginDate() { return lastLoginDate; }
+    public void setLastLoginDate(LocalDateTime lastLoginDate) { this.lastLoginDate = lastLoginDate;}
 }
 
 

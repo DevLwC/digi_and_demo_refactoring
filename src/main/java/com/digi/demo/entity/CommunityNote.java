@@ -11,8 +11,8 @@ public class CommunityNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//TODO: change fetch type to High/Quick & change that posts not notes get loaded first. Changing tgis will have consequences for the repo and the order of the following lines.
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")
     private Post post;
 

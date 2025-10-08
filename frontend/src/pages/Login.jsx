@@ -44,6 +44,7 @@ function Login() {
                     localStorage.setItem('followingCount', user.followingCount ?? 0);
                     localStorage.setItem('createdAt', user.createdAt ?? 'Unknown');
                     localStorage.setItem('location', user.location);
+                    localStorage.setItem('streakCount', user.streakCount ?? 0);
                     navigate('/dashboard');
                 } catch (err) {
                     setMessage(err.message);

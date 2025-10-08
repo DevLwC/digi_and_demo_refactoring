@@ -66,10 +66,10 @@ const AnimalAvatars = {
 }
 
 const user = {
-    name: "Niklas Stinkt",
+    name: localStorage.getItem('username'),
     avatarAnimal: "dog",
     notifications: 3,
-    streak: 5,
+    streak: localStorage.getItem('streakCount'),
 }
 
 const activity = [

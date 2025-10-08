@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
@@ -33,5 +36,19 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public void updateLoginStreak(User user) {
+        LocalDate lastLogin = user.getLastLoginDate().toLocalDate();
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+
+        if (lastLogin.isEqual(yesterday)) {
+            user.setStreakCount(user.getStreakCount() + 1);
+        } else if (!lastLogin.isEqual(today)) {
+            user.setStreakCount(1);
+        }
+        user.setLastLoginDate(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
