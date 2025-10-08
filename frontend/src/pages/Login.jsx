@@ -39,8 +39,11 @@ function Login() {
                     const user = await getCurrentUser();
                     localStorage.setItem('username', user.username);
                     localStorage.setItem('email', user.email);
+                    localStorage.setItem('bio', user.bio ?? 'Default');
                     localStorage.setItem('followersCount', user.followersCount ?? 0); //mabye does not work as intended - needs to be checked
                     localStorage.setItem('followingCount', user.followingCount ?? 0);
+                    localStorage.setItem('createdAt', user.createdAt ?? 'Unknown');
+                    localStorage.setItem('location', user.location);
                     navigate('/dashboard');
                 } catch (err) {
                     setMessage(err.message);

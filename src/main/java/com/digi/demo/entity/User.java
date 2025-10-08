@@ -2,12 +2,17 @@ package com.digi.demo.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String createdAt;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -18,22 +23,31 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    private String bio;
+
     @Column(columnDefinition = "integer default 0")
     private int followersCount = 0;
 
     @Column(columnDefinition = "integer default 0")
     private int followingCount = 0;
 
+    private String location;
     // Constructors
-    public User() {}
+    public User() {
+        this.createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        // the default location can be changed based on the ip adress, but that requires some extra backend work
+        this.location = "Hamburg, DE";
+    }
 
     public User(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        // the default location can be changed based on the ip adress, but that requires some extra backend work
+        this.location = "Hamburg, DE";
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -51,6 +65,15 @@ public class User {
 
     public int getFollowingCount() { return followingCount; }
     public void setFollowingCount(int followingCount) { this.followingCount = followingCount; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt;}
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location;}
 }
 
 

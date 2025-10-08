@@ -1,5 +1,7 @@
 import React from "react"
+import {useState} from "react";
 import "./Profile.css"
+import {API_BASE_URL} from "../config.js";
 
 // 1. Animal SVGs as components
 const AnimalAvatars = {
@@ -98,13 +100,29 @@ const AnimalAvatars = {
 
 // 2. Add avatarAnimal to user
 export default function Profile() {
+    const [bio, setBio] = useState(localStorage.getItem('bio') || "No bio set");
+
+    const handleBioChange = async (e) => {
+        const newBio = e.target.value;
+        setBio(newBio);
+        localStorage.setItem('bio', newBio);
+        try {
+            await fetch(`${API_BASE_URL}/api/users/updateBio`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({bio: newBio}),
+                credentials: 'include'
+            });
+        } catch (err) {
+            console.error('Failed to update bio on server:', err);
+        }
+    }
     const user = {
         name: localStorage.getItem('username'),
         handle: localStorage.getItem('email'),
-        bio: "🌍✨ Decolonizing my mind daily | queer, neurodivergent, eco-conscious anti-capitalist dreamer | amplifying marginalized voices & thriving in radical softness 🌱💜",
-        location: "Hamburg, DE",
+        location: localStorage.getItem('location'),
         link: "https://niklasson.com",
-        joined: "Joined 2025",
+        joined: localStorage.getItem('createdAt'),
         followers: localStorage.getItem('followersCount'),
         following: localStorage.getItem('followingCount'),
         status: {label: "Seed", icon: "🌿"},
@@ -153,7 +171,15 @@ export default function Profile() {
                                 <button className="btn btn--primary" type="button">Follow</button>
                             </div>
                         </div>
-                        <p className="bio">{user.bio}</p>
+                        <div>
+                            <textarea
+                                className="bio"
+                                value={bio}
+                                onChange={handleBioChange}
+                                rows={3}
+                                style={{width: "100%"}}
+                            />
+                        </div>
                         <ul className="facts" aria-label="Profile details">
                             <li>
                                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">

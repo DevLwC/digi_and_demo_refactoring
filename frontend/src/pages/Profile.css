@@ -181,8 +181,15 @@
 .bio {
     margin: 12px 0 8px;
     color: var(--text);
+    background: #ffffff;
+    border: 1.5px solid #ffffff;
+    resize: none;
+    transition: border-color 0.2s ease;
 }
-
+.bio:focus {
+    border-color: var(--primary);
+    outline: none;
+}
 .facts {
     list-style: none;
     padding: 0;
