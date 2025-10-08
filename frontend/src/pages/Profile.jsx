@@ -1,5 +1,5 @@
 import React from "react"
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import "./Profile.css"
 import {API_BASE_URL} from "../config.js";
 
@@ -102,6 +102,8 @@ const AnimalAvatars = {
 export default function Profile() {
     const [bio, setBio] = useState(localStorage.getItem('bio') || "No bio set");
     const [location, setLocation] = useState(localStorage.getItem('location') || "");
+    const [active, setActive] = useState("posts");
+    const [posts, setPosts] = useState([]);
 
     const handleLocationChange = async (e) => {
         const newLocation = e.target.value;
@@ -151,7 +153,18 @@ export default function Profile() {
         {key: "replies", label: "Replies"},
     ];
 
-    const [active, setActive] = React.useState("posts");
+    useEffect(() => {
+        if (active === "posts") {
+            fetch(`${API_BASE_URL}/api/posts/ownPosts?username=${user.name}`, {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => setPosts(data))
+                .catch(err => {setPosts([]);
+                    console.error('Error fetching posts:', err)
+                });
+        }
+    }, [active, user.name]);
 
     return (
         <div className="profile-bg">
@@ -266,15 +279,29 @@ export default function Profile() {
                     <section className="content">
                         {active === "posts" && (
                             <div className="grid">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <article key={i} className="post card">
-                                        <div className="post__media skeleton"/>
-                                        <div className="post__body">
-                                            <div className="skeleton skeleton--line"/>
-                                            <div className="skeleton skeleton--line w-70"/>
-                                        </div>
-                                    </article>
-                                ))}
+                                {posts.length === 0 ? (
+                                    // Skeletons or empty state
+                                    [1, 2, 3, 4, 5, 6].map((i) => (
+                                        <article key={i} className="post card">
+                                            <div className="post__media skeleton"/>
+                                            <div className="post__body">
+                                                <div className="skeleton skeleton--line"/>
+                                                <div className="skeleton skeleton--line w-70"/>
+                                            </div>
+                                        </article>
+                                    ))
+                                ) : (
+                                    posts.map((post) => (
+                                        <article key={post.id} className="post card">
+                                            <div className="post__media" />
+                                            <div className="post__body">
+                                                <div><strong>{post.author.username}</strong></div>
+                                                <div>{post.content}</div>
+                                                <div style={{fontSize: "0.8em", color: "#888"}}>{post.createdAt}</div>
+                                            </div>
+                                        </article>
+                                    ))
+                                )}
                             </div>
                         )}
                         {active === "bookmarks" && (

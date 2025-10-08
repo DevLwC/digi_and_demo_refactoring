@@ -8,6 +8,7 @@ import com.digi.demo.service.AIValidationService;
 import com.digi.demo.service.FriendRequestService;
 import com.digi.demo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -63,5 +64,12 @@ public class PostController {
         friendUsers.add(user);
         feed.addAll(postService.getPostsByOthers(friendUsers));
         return feed;
+    }
+
+    @GetMapping("/ownPosts")
+    public ResponseEntity<List<Post>> getOwnPosts(@RequestParam String username) {
+        User user = userRepository.findByUsername(username).orElseThrow();
+        List<Post> posts = postService.getPostByUser(user);
+        return ResponseEntity.ok(posts);
     }
 }

@@ -12,4 +12,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByAuthorInOrderByCreatedAtDesc(List<User> authors);
     @Query("SELECT p FROM Post p WHERE p.author NOT IN :authors ORDER BY p.createdAt DESC")
     List<Post> findPostsNotByFriends(@Param("authors") List<User> authors);
+    List<Post> findByAuthorOrderByCreatedAtDesc(User author);
 }

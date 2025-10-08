@@ -30,4 +30,8 @@ public class PostService {
     public List<Post> getPostsByOthers(List<User> friends) {
         return postRepository.findPostsNotByFriends(friends);
     }
+
+    public List<Post> getPostByUser(User user) {
+        return postRepository.findByAuthorOrderByCreatedAtDesc(user);
+    }
 }
