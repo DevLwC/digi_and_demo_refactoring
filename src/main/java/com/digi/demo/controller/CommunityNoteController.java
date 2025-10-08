@@ -5,6 +5,7 @@ import com.digi.demo.entity.CommunityNote;
 import com.digi.demo.entity.NoteStatus;
 import com.digi.demo.entity.Post;
 import com.digi.demo.entity.User;
+import com.digi.demo.service.AIValidationService;
 import com.digi.demo.service.CommunityNoteService;
 import com.digi.demo.service.PostService;
 import com.digi.demo.service.UserService;
@@ -24,6 +25,8 @@ public class CommunityNoteController {
     @Autowired
     private UserService userService;
 
+    private AIValidationService aiValidationService;
+
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<CommunityNote>> getNotesByPost(@PathVariable Long postId) {
         Post post = postService.getPostById(postId);
@@ -39,6 +42,13 @@ public class CommunityNoteController {
             @RequestParam String content,
             @RequestParam String authorUsername) {
         try {
+            var validatePost = aiValidationService.validateContent(content);
+            var validateFacts = aiValidationService.validateFactAccuracy(content);
+
+            if (!validatePost.isValid() || !validateFacts.isValid()) {
+                throw new IllegalArgumentException("Post content is not valid: " + String.join(", ", validatePost.getViolationReasons()) + "; " + String.join(", ", validateFacts.getViolationReasons()));
+            }
+
             Post post = postService.getPostById(postId);
             User author = userService.findByUsername(authorUsername);
             CommunityNote note = noteService.createNote(post, author, content);
