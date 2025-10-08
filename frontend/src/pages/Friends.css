@@ -1,0 +1,225 @@
+:root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #667085;
+    --primary: #2563eb;
+    --accent: #e8f0ff;
+    --ring: rgba(37, 99, 235, 0.35);
+    --radius: 16px;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.Friends {
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    margin: 0;
+    padding: 0 0 0 16px;
+    background: var(--card);
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    border-top: none;
+}
+
+.tab {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.tab.is-active {
+    background: #f4f7ff;
+    color: var(--primary);
+    border-color: #e5edff;
+}
+
+.TabContent {
+    padding: 16px;
+}
+.RequestsHeader {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.RequestCount {
+    background: #18192b;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 14px;
+    margin-left: 8px;
+    font-weight: 500;
+}
+
+.RequestCard {
+    display: flex;
+    align-items: center;
+    background: #e9ebef;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: none;
+    min-height: 80px;
+}
+
+.RequestAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    overflow: hidden;
+}
+
+.RequestInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.RequestName {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 2px;
+    color: #0f172a;
+}
+
+.RequestUsername {
+    color: #667085;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.RequestTime {
+    color: #667085;
+    font-size: 13px;
+}
+
+.RequestActions {
+    display: flex;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+.RequestBtn {
+    background: #18192b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+
+.RequestBtn.decline {
+    background: #fff;
+    color: #18192b;
+    border: 1px solid #e5e7eb;
+}
+.SearchBar {
+    width: 100%;
+    background: #f4f5f7;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 16px;
+    margin-bottom: 24px;
+    box-sizing: border-box;
+}
+
+.SearchResultCard {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border-radius: 12px;
+    padding: 12px 0;
+    margin-bottom: 8px;
+}
+
+.SearchResultAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.SearchResultInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.SearchResultName {
+    font-weight: 600;
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.SearchResultUsername {
+    color: #667085;
+    font-size: 14px;
+}
+
+.SearchResultStatus {
+    background: #f4f5f7;
+    color: #18192b;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 14px;
+    margin-left: 16px;
+}
+
+.SearchResultBtn {
+    background: #18192b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-size: 14px;
+    margin-left: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}

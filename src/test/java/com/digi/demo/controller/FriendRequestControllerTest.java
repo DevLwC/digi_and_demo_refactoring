@@ -2,16 +2,20 @@ package com.digi.demo.controller;
 
 import com.digi.demo.entity.User;
 import com.digi.demo.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import com.digi.demo.controller.FriendRequestController;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -26,6 +30,9 @@ class FriendRequestControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private User alice, bob;
 
     @BeforeEach
@@ -34,21 +41,23 @@ class FriendRequestControllerTest {
         bob = userRepository.save(new User("bob", "pass", "bob@example.com"));
     }
 
+    @WithMockUser(username = "alice")
     @Test
     void testSendAndRespondToFriendRequest() throws Exception {
-        // Send request
+        // JSON-Body für die Anfrage
+        var requestDto = new FriendRequestController.FriendRequestDto();
+        requestDto.setSenderUsername("alice");
+        requestDto.setReceiverUsername("bob");
+
         String response = mockMvc.perform(post("/api/friends/request")
-                        .param("senderUsername", "alice")
-                        .param("receiverUsername", "bob"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andReturn().getResponse().getContentAsString();
 
-        // Extract requestId
-        long requestId = new com.fasterxml.jackson.databind.ObjectMapper()
-                .readTree(response).get("id").asLong();
+        long requestId = objectMapper.readTree(response).get("id").asLong();
 
-        // Respond to request
         mockMvc.perform(post("/api/friends/respond")
                         .param("requestId", String.valueOf(requestId))
                         .param("status", "ACCEPTED"))
