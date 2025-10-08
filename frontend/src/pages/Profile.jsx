@@ -101,6 +101,23 @@ const AnimalAvatars = {
 // 2. Add avatarAnimal to user
 export default function Profile() {
     const [bio, setBio] = useState(localStorage.getItem('bio') || "No bio set");
+    const [location, setLocation] = useState(localStorage.getItem('location') || "");
+
+    const handleLocationChange = async (e) => {
+        const newLocation = e.target.value;
+        setLocation(newLocation);
+        localStorage.setItem('location', newLocation);
+        try {
+            await fetch(`${API_BASE_URL}/api/users/updateLocation`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({location: newLocation}),
+                credentials: 'include'
+            });
+        } catch (err) {
+            console.error('Failed to update location on server:', err);
+        }
+    };
 
     const handleBioChange = async (e) => {
         const newBio = e.target.value;
@@ -120,7 +137,6 @@ export default function Profile() {
     const user = {
         name: localStorage.getItem('username'),
         handle: localStorage.getItem('email'),
-        location: localStorage.getItem('location'),
         link: "https://niklasson.com",
         joined: localStorage.getItem('createdAt'),
         followers: localStorage.getItem('followersCount'),
@@ -190,7 +206,12 @@ export default function Profile() {
                                         strokeWidth="1.6"
                                     />
                                 </svg>
-                                {user.location}
+                                <input
+                                    type="text"
+                                    value={location}
+                                    onChange={handleLocationChange}
+                                    className="location-input"
+                                />
                             </li>
                             <li>
                                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">

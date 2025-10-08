@@ -190,6 +190,18 @@
     border-color: var(--primary);
     outline: none;
 }
+
+.location-input {
+    color: var(--text);
+    background: #ffffff;
+    border: 1.5px solid #ffffff;
+    resize: none;
+    transition: border-color 0.2s ease;
+}
+.location-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
 .facts {
     list-style: none;
     padding: 0;

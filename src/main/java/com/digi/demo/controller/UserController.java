@@ -38,5 +38,19 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Bio updated successfully"));
     }
 
-
+    @PostMapping("/updateLocation")
+    public ResponseEntity<?> updateLocation(@RequestBody Map<String, String> body, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String username = authentication.getName();
+        String location = body.get("location");
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+        user.setLocation(location);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("message", "Location updated successfully"));
+    }
 }
