@@ -1,274 +1,163 @@
-import React, {useState, useEffect, useRef} from 'react';
-import './Friends.css';
-import { API_BASE_URL } from '../config.js';
+import React, {useState, useEffect, useRef} from "react";
+import "./Friends.css";
 
-export async function searchUsers(username) {
-    const res = await fetch(`${API_BASE_URL}/api/users/search?username=${encodeURIComponent(username)}`, {
-        method: "GET",
-        credentials: "include"
-    });
-    if (!res.ok) throw new Error('Failed to search users');
-    return await res.json();
-}
+const AnimalAvatars = {
+    dog: <span style={{fontSize: 32}}>🐶</span>,
+    cat: <span style={{fontSize: 32}}>🐱</span>,
+    fox: <span style={{fontSize: 32}}>🦊</span>,
+    rabbit: <span style={{fontSize: 32}}>🐰</span>,
+    owl: <span style={{fontSize: 32}}>🦉</span>,
+};
 
+const mockChats = [
+    {user: "Alex", avatar: "cat", messages: ["Hey!", "How are you?"]},
+    {user: "Samira", avatar: "fox", messages: ["Let's meet at the eco-market!"]},
+];
 
-export async function sendChatMessage(receiver, message) {
-    const res = await fetch(`${API_BASE_URL}/api/chat/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receiver, message })
-    });
-    if (!res.ok) throw new Error('Failed to send message');
-    return await res.json();
-}
+const mockSearchResults = [
+    {username: "Jordan", avatar: "rabbit", isFriend: false},
+    {username: "Maya", avatar: "owl", isFriend: true},
+];
 
-export async function getChatMessages(user) {
-    const res = await fetch(`${API_BASE_URL}/api/chat/messages?user=${encodeURIComponent(user)}`);
-    if (!res.ok) throw new Error('Failed to get chat messages');
-    return await res.json();
-}
+const mockRequests = [
+    {id: 1, username: "Lena", avatar: "cat", email: "lena@mail.com", time: "2h ago"},
+    {id: 2, username: "Chris", avatar: "dog", email: "chris@mail.com", time: "5h ago"},
+];
 
-export async function sendFriendRequest(senderUsername, receiverUsername) {
-    const res = await fetch(`${API_BASE_URL}/api/friends/request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ senderUsername, receiverUsername })
-    });
-    if (!res.ok) throw new Error('Failed to send friend request');
-    return await res.json();
-}
-
-export async function getPendingRequests(receiverUsername) {
-    const res = await fetch(`${API_BASE_URL}/api/friends/requests?receiverUsername=${encodeURIComponent(receiverUsername)}`);
-    if (!res.ok) throw new Error('Failed to get pending requests');
-    return await res.json();
-}
-export async function respondToFriendRequest(requestId, status) {
-    const res = await fetch(`${API_BASE_URL}/api/friends/respond?requestId=${requestId}&status=${status}`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    if (!res.ok) throw new Error('Failed to respond to request');
-    return await res.json();
-}
-
-
-// TODO: make an api call to get the profile pricture for the displaying
-function getAvatar(avatarUrl, username) {
-    if (avatarUrl) {
-        return <img src={avatarUrl} alt={username} className="RequestAvatar" />;
-    }
-    // Placeholder: use emoji or a default image
-    return (
-        <div className="RequestAvatar" style={{ fontSize: 32 }}>
-            🧑‍🦱
-        </div>
-    );
-}
-
-function Friends() {
-    const [activeTab, setActiveTab] = useState('chats');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [searchError, setSearchError] = useState('');
-
-    const [receiver, setReceiver] = useState('');
+export default function Friends() {
+    const [activeTab, setActiveTab] = useState("chats");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState(mockSearchResults);
+    const [chatUser, setChatUser] = useState("");
     const [chatMessages, setChatMessages] = useState([]);
-    const [chatError, setChatError] = useState('');
+    const [friendUsername, setFriendUsername] = useState("");
+    const [pendingRequests, setPendingRequests] = useState(mockRequests);
 
-    const [friendUsername, setFriendUsername] = useState('');
-    const [pendingRequests, setPendingRequests] = useState([]);
-    const [requestError, setRequestError] = useState('');
-    const [sendRequestStatus, setSendRequestStatus] = useState('');
-
-    const tabs = [
-        { key: 'chats', label: 'Chats' },
-        { key: 'searches', label: 'Searches' },
-        { key: 'requests', label: 'Friend Requests' }
-    ];
-
-    // Fetch pending requests when "requests" tab is active
+    // Simulate chat selection
     useEffect(() => {
-        if (activeTab === 'requests') {
-            setRequestError('');
-            const username = localStorage.getItem('username');
-            getPendingRequests(username) //should be my username from auth context
-                .then(data => setPendingRequests(data))
-                .catch(err => setRequestError(err.message));
+        if (chatUser) {
+            const chat = mockChats.find(c => c.user === chatUser);
+            setChatMessages(chat ? chat.messages : []);
+        } else {
+            setChatMessages([]);
         }
-    }, [activeTab]);
+    }, [chatUser]);
 
-    // Handlers for API calls
-    const handleSearch = async () => {
-        setSearchError('');
-        try {
-            const data = await searchUsers(searchTerm);
-            setSearchResults(data);
-        } catch (err) {
-            setSearchError(err.message);
-        }
-    };
-
-    const handleShowChat = async () => {
-        setChatError('');
-        try {
-            const data = await getChatMessages(receiver);
-            setChatMessages(data);
-        } catch (err) {
-            setChatError(err.message);
-        }
-    };
-
-    const handleSendFriendRequest = async () => {
-        setSendRequestStatus('');
-        setRequestError('');
-        try {
-            const currentUser = "1234";
-            await sendFriendRequest(currentUser, friendUsername);
-            setSendRequestStatus('Request sent!');
-        } catch (err) {
-            setRequestError(err.message);
-        }
-    };
-
-    // In Friends component
-    const handleRespondToRequest = async (requestId, status) => {
-        try {
-            await respondToFriendRequest(requestId, status);
-            // Refresh requests
-            const updated = await getPendingRequests(localStorage.getItem('username'));
-            setPendingRequests(updated);
-        } catch (err) {
-            setRequestError('Failed to respond to request');
-        }
-    };
-    const searchTimeout = useRef();
-
+    // Simulate search
     const handleSearchInput = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        setSearchError('');
-        clearTimeout(searchTimeout.current);
-        searchTimeout.current = setTimeout(() => {
-            if (value.trim()) {
-                handleSearch();
-            } else {
-                setSearchResults([]);
-            }
-        }, 300); // 300ms debounce
+        setSearchTerm(e.target.value);
+        if (e.target.value.trim()) {
+            setSearchResults(mockSearchResults.filter(u =>
+                u.username.toLowerCase().includes(e.target.value.toLowerCase())
+            ));
+        } else {
+            setSearchResults([]);
+        }
     };
 
     return (
-        <div className="Friends">
-            <nav className="tabs" aria-label="Friends sections">
-                {tabs.map(tab => (
-                    <button
-                        key={tab.key}
-                        className={`tab${activeTab === tab.key ? ' is-active' : ''}`}
-                        aria-current={activeTab === tab.key ? 'page' : undefined}
-                        onClick={() => setActiveTab(tab.key)}
-                        type="button"
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </nav>
-            <div className="TabContent">
-                {activeTab === 'chats' && (
-                    <div>
-                        <input
-                            type="text"
-                            className="form-control mb-2"
-                            placeholder="Receiver username"
-                            value={receiver}
-                            onChange={e => setReceiver(e.target.value)}
-                        />
-                        <button className="btn btn-primary mb-2" onClick={handleShowChat}>
-                            Get Chat Messages
-                        </button>
-                        {chatError && <div style={{ color: 'red' }}>{chatError}</div>}
-                        <ul className="list-group mb-4">
-                            {chatMessages.map((msg, idx) => (
-                                <li key={idx} className="list-group-item">{msg.text || JSON.stringify(msg)}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-                {activeTab === 'searches' && (
-                    <div>
-                        <input
-                            type="text"
-                            className="form-control mb-2"
-                            placeholder="Search username"
-                            value={searchTerm}
-                            onChange={handleSearchInput}
-                        />
-                        {searchError && <div style={{ color: 'red' }}>{searchError}</div>}
-                        <ul className="list-group mb-4">
-                            {searchResults.map((user, idx) => (
-                                <div className="SearchResultCard">
-                                    <div className="SearchResultAvatar">
-                                        {/* Avatar image or emoji */}
-                                        <img src={getAvatar(user.username)} alt={user.username} />
-                                    </div>
-                                    <div className="SearchResultInfo">
-                                        <div className="SearchResultName">{user.username}</div>
-                                    </div>
-                                    {user.isFriend ? (
-                                        <div className="SearchResultStatus">✓ Friend</div>
-                                    ) : (
-                                        <button className="SearchResultBtn">
-                                            <span role="img" aria-label="add">👥</span> Add
-                                        </button>
-                                    )}
+        <div className="friends-bg">
+            <div className="friends-center-container">
+                <main className="friends" role="main">
+                    <nav className="tabs" aria-label="Friends sections">
+                        {["chats", "searches", "requests"].map(tab => (
+                            <button
+                                key={tab}
+                                className={`tab${activeTab === tab ? " is-active" : ""}`}
+                                aria-current={activeTab === tab ? "page" : undefined}
+                                onClick={() => setActiveTab(tab)}
+                                type="button"
+                            >
+                                {tab === "chats" ? "Chats" : tab === "searches" ? "Search" : "Requests"}
+                            </button>
+                        ))}
+                    </nav>
+                    <section className="content">
+                        {activeTab === "chats" && (
+                            <div className="card">
+                                <h3 style={{marginBottom: 16, color: "var(--primary)"}}>Chats</h3>
+                                <select
+                                    className="form-control"
+                                    value={chatUser}
+                                    onChange={e => setChatUser(e.target.value)}
+                                >
+                                    <option value="">Select user</option>
+                                    {mockChats.map((c, i) => (
+                                        <option key={i} value={c.user}>{c.user}</option>
+                                    ))}
+                                </select>
+                                <ul style={{marginTop: 16}}>
+                                    {chatMessages.map((msg, idx) => (
+                                        <li key={idx} style={{marginBottom: 8}}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {activeTab === "searches" && (
+                            <div className="card">
+                                <h3 style={{marginBottom: 16, color: "var(--primary)"}}>Search Users</h3>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Search username"
+                                    value={searchTerm}
+                                    onChange={handleSearchInput}
+                                />
+                                <div>
+                                    {searchResults.map((user, idx) => (
+                                        <div className="SearchResultCard" key={idx}>
+                                            <div className="SearchResultAvatar">
+                                                {AnimalAvatars[user.avatar] || <span>🐾</span>}
+                                            </div>
+                                            <div className="SearchResultName">{user.username}</div>
+                                            {user.isFriend ? (
+                                                <div className="SearchResultStatus">✓ Friend</div>
+                                            ) : (
+                                                <button className="SearchResultBtn">
+                                                    <span role="img" aria-label="add">👥</span> Add
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-                {activeTab === 'requests' && (
-                    <div>
-                        <input
-                            type="text"
-                            className="form-control mb-2"
-                            placeholder="Friend's username"
-                            value={friendUsername}
-                            onChange={e => setFriendUsername(e.target.value)}
-                        />
-                        <button className="btn btn-primary mb-2" onClick={handleSendFriendRequest}>
-                            Send Friend Request
-                        </button>
-                        {sendRequestStatus && <div style={{ color: 'green' }}>{sendRequestStatus}</div>}
-                        {requestError && <div style={{ color: 'red' }}>{requestError}</div>}
-                        <div>
-                            {pendingRequests.map((req, idx) => (
-                                <div key={idx} className="RequestCard">
-                                    {getAvatar(req.avatarUrl, req.username)}
-                                    <div className="RequestInfo">
-                                        <div className="RequestName">{req.username}</div>
-                                        <div className="RequestUsername">{req.email}</div>
-                                        <div className="RequestTime">{req.time ? timeAgo(req.time) : "just now"}</div>
-                                    </div>
-                                    <div className="RequestActions">
-                                        <button
-                                            className="RequestBtn"
-                                            title="Accept"
-                                            onClick={() => handleRespondToRequest(req.id, "ACCEPTED")}
-                                        >&#10003;</button>
-                                        <button
-                                            className="RequestBtn decline"
-                                            title="Decline"
-                                            onClick={() => handleRespondToRequest(req.id, "DECLINED")}
-                                        >&#10005;</button>
-                                    </div>
+                            </div>
+                        )}
+                        {activeTab === "requests" && (
+                            <div className="card">
+                                <h3 style={{marginBottom: 16, color: "var(--primary)"}}>Friend Requests</h3>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Friend's username"
+                                    value={friendUsername}
+                                    onChange={e => setFriendUsername(e.target.value)}
+                                />
+                                <button className="SearchResultBtn" style={{marginTop: 8}}>
+                                    Send Friend Request
+                                </button>
+                                <div style={{marginTop: 16}}>
+                                    {pendingRequests.map((req, idx) => (
+                                        <div key={idx} className="RequestCard">
+                                            <div className="RequestAvatar">
+                                                {AnimalAvatars[req.avatar] || <span>🧑‍🦱</span>}
+                                            </div>
+                                            <div className="RequestInfo">
+                                                <div className="RequestName">{req.username}</div>
+                                                <div className="RequestUsername">{req.email}</div>
+                                                <div className="RequestTime">{req.time}</div>
+                                            </div>
+                                            <div className="RequestActions">
+                                                <button className="RequestBtn" title="Accept">&#10003;</button>
+                                                <button className="RequestBtn decline" title="Decline">&#10005;</button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                            </div>
+                        )}
+                    </section>
+                </main>
             </div>
         </div>
     );
 }
-
-export default Friends;

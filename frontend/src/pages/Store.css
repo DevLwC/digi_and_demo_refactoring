@@ -1,110 +1,139 @@
-.store-root {
-    background: linear-gradient(180deg, #eaf6e9 0%, #c6e6c3 100%);
+:root {
+    --bg: #eaf6e9;
+    --bg-gradient: linear-gradient(180deg, #eaf6e9 0%, #c6e6c3 100%);
+    --card: #fff;
+    --text: #355c35;
+    --muted: #4b6c4b;
+    --primary: #8fd18f;
+    --primary-light: #b6e2b6;
+    --accent: #c6e6c3;
+    --ring: rgba(76, 175, 80, 0.12);
+    --radius: 20px;
+    --shadow: 0 8px 24px rgba(76, 175, 80, 0.12);
+}
+
+.store-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+}
+
+.store-center-container {
     min-height: 100vh;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    padding-bottom: 32px;
-}
-
-.store-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px 24px 0 24px;
-}
-
-.store-header__logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.store-header__title {
-    font-weight: 700;
-    font-size: 24px;
-    color: #6a8c4e;
-}
-
-.store-header__balance {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: auto;
-    justify-content: flex-end;
-}
-
-.store-header__currency {
-    height: 40px;
-}
-
-.store-header__amount {
-    font-weight: 700;
-    font-size: 28px;
-    color: #7a8c3e;
-}
-
-.store-header__settings {
-    height: 28px;
-}
-
-.store-title {
-    padding: 16px 24px 0 24px;
-}
-
-.store-title__text {
-    font-weight: 700;
-    font-size: 22px;
-    margin: 0;
-    color: #222;
-}
-
-.store-grid-container {
-    margin: 24px auto;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    padding: 16px;
-}
-
-.store-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.store-item {
-    background: #f7f8fa;
-    border: 2px solid #d1d5db;
-    border-radius: 12px;
-    padding: 8px;
+    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    justify-content: center;
+    position: relative;
+    z-index: 1;
 }
 
-.store-item__image {
+.store {
     width: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 8px;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 8px 16px 96px;
+    background: var(--bg-gradient);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-.store-item__title {
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    padding: 24px;
+}
+
+.store__title {
+    color: var(--primary);
+    font-size: 1.6rem;
     font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 4px;
+    margin-bottom: 24px;
     text-align: center;
-    color: #222;
 }
 
-.store-item__price {
+.store__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.store__item {
+    background: var(--accent);
+    border-radius: 16px;
+    box-shadow: 0 1px 4px var(--ring);
+    padding: 18px 16px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    font-size: 15px;
-    color: #444;
+    text-align: center;
 }
 
-.store-item__currency {
-    height: 18px;
-    margin-right: 4px;
+.store__item-img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+    object-fit: contain;
+}
+
+.store__item-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.store__item-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.store__item-price {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.store__item-btn {
+    background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.store__item-btn:hover {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+}
+
+@media (max-width: 700px) {
+    .store {
+        padding: 8px 4px 48px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .store__grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
