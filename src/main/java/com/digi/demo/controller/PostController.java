@@ -4,6 +4,7 @@ import com.digi.demo.entity.FriendRequest;
 import com.digi.demo.entity.Post;
 import com.digi.demo.entity.User;
 import com.digi.demo.repository.UserRepository;
+import com.digi.demo.service.AIValidationService;
 import com.digi.demo.service.FriendRequestService;
 import com.digi.demo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,21 @@ public class PostController {
     @Autowired
     private FriendRequestService friendRequestService;
 
+    private AIValidationService aiValidationService;
+
     @PostMapping("/create")
     public Post createPost(@RequestParam String authorUsername, @RequestParam String content) {
+
+        var validatePost = aiValidationService.validateContent(content);
+        var validateFacts = aiValidationService.validateFactAccuracy(content);
+
+        if (!validatePost.isValid() || !validateFacts.isValid()) {
+            throw new IllegalArgumentException("Post content is not valid: " + String.join(", ", validatePost.getViolationReasons()) + "; " + String.join(", ", validateFacts.getViolationReasons()));
+        }
+
+        //ToDo: emotionale Intelligenz in die Datenbank speichern
+        //ToDo: dem User validePost.getViolationReasons() und validateFacts.getViolationReasons() anzeigen
+
         User author = userRepository.findByUsername(authorUsername).orElseThrow();
         return postService.createPost(author, content);
     }
