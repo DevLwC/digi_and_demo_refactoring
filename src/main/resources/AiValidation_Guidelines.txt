@@ -1,0 +1,37 @@
+AI VALIDATION GUIDELINES
+Politische Diskussionsplattform
+
+Ziel:
+Förderung eines respektvollen, faktenbasierten und offenen politischen Austauschs.
+Meinungsfreiheit ist erwünscht – Hetze und Diskriminierung sind untersagt.
+
+-----------------------------------
+VERBOTENE INHALTE
+-----------------------------------
+- Hass, Hetze oder gezielte Beleidigungen
+- Diskriminierung nach Herkunft, Religion, Geschlecht, Orientierung, Behinderung oder Meinung
+- Gewaltverherrlichung, Aufrufe zu Gewalt oder Straftaten
+- Rassismus, Sexismus, Antisemitismus, Islamfeindlichkeit
+- Extremismus, Radikalisierung oder Terrorismus
+- Falschinformationen, Verschwörungstheorien, gezielte Täuschung
+- Mobbing, Belästigung, Homophobie, Transphobie, Frauenfeindlichkeit
+
+-----------------------------------
+ERLAUBTE INHALTE
+-----------------------------------
+- Diskussion über alle Themen, auch sensible, sofern respektvoll
+- Emotionale, leidenschaftliche oder hitzige Sprache ist erlaubt, solange sie nicht verletzend ist
+- Sarkasmus, Ironie und Humor sind zulässig, wenn nicht diskriminierend
+- Kritik an Politik, Institutionen und Gesellschaft ist erwünscht
+- Aufklärung, Analyse oder Kontext zu verbotenen Themen ist erlaubt
+
+-----------------------------------
+BEWERTUNG DURCH DIE KI
+-----------------------------------
+- Nicht das Thema, sondern die Intention zählt
+- Emotionale Sprache ≠ Regelverstoß
+- Nur klare Verstöße führen zu „invalid“
+- Politische Meinungen dürfen nicht zensiert werden
+- Im Zweifel zugunsten der Meinungsfreiheit bewerten
+
+Ende der Richtlinien

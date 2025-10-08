@@ -31,21 +31,24 @@ public class AIValidationService {
     private String deploymentOrModelId;
 
     private final ObjectMapper objectMapper;
-    private List<String> censoredTopics;
+    private List<String> aiValidationGuidelines;
 
     public AIValidationService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        loadCensoredTopics();
+        loadAiValidationGuidelines();
     }
 
-    private void loadCensoredTopics() {
+    /**
+     * Lädt die Richtlinien für KI-Validierung aus der Datei "AiValidation_Guidelines.txt".
+     */
+    private void loadAiValidationGuidelines() {
         try {
-            Resource resource = new ClassPathResource("consored_topics.txt");
+            Resource resource = new ClassPathResource("AiValidation_Guidelines.txt");
             String content = Files.readString(resource.getFile().toPath());
-            censoredTopics = Arrays.asList(content.split("\n"));
+            aiValidationGuidelines = Arrays.asList(content.split("\n"));
         } catch (IOException e) {
-            logger.error("Fehler beim Laden der verbotenen Themen", e);
-            censoredTopics = new ArrayList<>();
+            logger.error("Fehler beim Laden der AI-Validierungsrichtlinien", e);
+            aiValidationGuidelines = new ArrayList<>();
         }
     }
 
@@ -59,14 +62,14 @@ public class AIValidationService {
 
         try {
             List<ChatRequestMessage> messages = Arrays.asList(
-                new ChatRequestSystemMessage("Du bist ein KI-Moderator für eine politische Social-Media-Plattform. " +
-                        "Deine Aufgabe ist es, Inhalte auf unangemessene oder schädliche Inhalte zu prüfen."),
-                new ChatRequestUserMessage(prompt)
+                    new ChatRequestSystemMessage("Du bist ein KI-Moderator für eine politische Social-Media-Plattform. " +
+                            "Deine Aufgabe ist es, Inhalte anhand der bereitgestellten AI-Validierungsrichtlinien zu prüfen."),
+                    new ChatRequestUserMessage(prompt)
             );
 
             ChatCompletionsOptions options = new ChatCompletionsOptions(messages)
-                .setTemperature(0.0)
-                .setMaxTokens(800);
+                    .setTemperature(0.0)
+                    .setMaxTokens(800);
 
             ChatCompletions chatCompletions = client.getChatCompletions(deploymentOrModelId, options);
             String content = chatCompletions.getChoices().get(0).getMessage().getContent();
@@ -83,31 +86,34 @@ public class AIValidationService {
         }
     }
 
+    /**
+     * Erstellt den Prompt für die KI unter Verwendung der AIValidation_Guidelines.
+     */
     private String buildPrompt(String userInput) {
         return String.format("""
-                Analysiere den folgenden Text auf unangemessene Inhalte und bewerte die emotionale Intelligenz.
-                
-                VERBOTENE THEMEN:
-                %s
-                
-                TEXT ZUR ANALYSE:
-                %s
-                
-                Antworte ausschließlich im folgenden JSON-Format:
-                {
-                    "valid": boolean,
-                    "emotionalIntelligence": number (0-100),
-                    "violationReasons": [string],
-                    "confidence": number (0.0-1.0)
-                }
-                
-                Erklärung der Felder:
-                - valid: true wenn der Text akzeptabel ist, false wenn er verbotene Inhalte enthält
-                - emotionalIntelligence: Bewertung der emotionalen Intelligenz (0-100)
-                - violationReasons: Liste der Gründe bei Ablehnung
-                - confidence: Konfidenz deiner Bewertung (0.0-1.0)
-                """,
-                String.join("\n", censoredTopics),
+                        Analysiere den folgenden Text auf unangemessene Inhalte und bewerte die emotionale Intelligenz.
+                        
+                        AI-VALIDIERUNGS-RICHTLINIEN:
+                        %s
+                        
+                        TEXT ZUR ANALYSE:
+                        %s
+                        
+                        Antworte ausschließlich im folgenden JSON-Format:
+                        {
+                            "valid": boolean,
+                            "emotionalIntelligence": number (0-100),
+                            "violationReasons": [string],
+                            "confidence": number (0.0-1.0)
+                        }
+                        
+                        Erklärung der Felder:
+                        - valid: true wenn der Text akzeptabel ist, false wenn er Richtlinien verletzt
+                        - emotionalIntelligence: Bewertung der emotionalen Intelligenz (0-100)
+                        - violationReasons: Liste der Gründe bei Ablehnung
+                        - confidence: Konfidenz deiner Bewertung (0.0-1.0)
+                        """,
+                String.join("\n", aiValidationGuidelines),
                 userInput
         );
     }
@@ -120,46 +126,46 @@ public class AIValidationService {
 
         try {
             List<ChatRequestMessage> messages = Arrays.asList(
-                new ChatRequestSystemMessage("""
-                    Du bist ein Faktenprüfer für eine politische Social-Media-Plattform.
-                    Deine Aufgabe ist es, Aussagen ausschließlich auf ihre faktische Richtigkeit zu überprüfen.
-                    
-                    Prüfe dabei:
-                    1. Überprüfbare Fakten und Statistiken
-                    2. Quellenangaben und deren Seriosität
-                    3. Logische Widersprüche und Inkonsistenzen
-                    4. Bekannte Falschinformationsmuster
-                    5. Aktualität und Kontext der Informationen
-                    
-                    Ignoriere dabei:
-                    - Emotionale Ausdrucksweise
-                    - Meinungen und persönliche Ansichten
-                    - Stilistische Aspekte
-                    """),
-                new ChatRequestUserMessage("""
-                    Analysiere den folgenden Text ausschließlich auf Faktengenauigkeit:
-                    
-                    %s
-                    
-                    Antworte ausschließlich im folgenden JSON-Format:
-                    {
-                        "valid": boolean,
-                        "violationReasons": [
-                            "Detaillierte Erklärungen zu gefundenen faktischen Unstimmigkeiten"
-                        ],
-                        "confidence": number (0.0-1.0)
-                    }
-                    
-                    Wobei:
-                    - valid: true wenn alle überprüfbaren Fakten korrekt sind, false wenn Falschinformationen gefunden wurden
-                    - violationReasons: Liste mit detaillierten Erklärungen zu faktischen Unstimmigkeiten
-                    - confidence: Konfidenz in die faktische Bewertung (0.0-1.0)
-                    """.formatted(content))
+                    new ChatRequestSystemMessage("""
+                            Du bist ein Faktenprüfer für eine politische Social-Media-Plattform.
+                            Deine Aufgabe ist es, Aussagen ausschließlich auf ihre faktische Richtigkeit zu überprüfen.
+                            
+                            Prüfe dabei:
+                            1. Überprüfbare Fakten und Statistiken
+                            2. Quellenangaben und deren Seriosität
+                            3. Logische Widersprüche und Inkonsistenzen
+                            4. Bekannte Falschinformationsmuster
+                            5. Aktualität und Kontext der Informationen
+                            
+                            Ignoriere dabei:
+                            - Emotionale Ausdrucksweise
+                            - Meinungen und persönliche Ansichten
+                            - Stilistische Aspekte
+                            """),
+                    new ChatRequestUserMessage("""
+                            Analysiere den folgenden Text ausschließlich auf Faktengenauigkeit:
+                            
+                            %s
+                            
+                            Antworte ausschließlich im folgenden JSON-Format:
+                            {
+                                "valid": boolean,
+                                "violationReasons": [
+                                    "Detaillierte Erklärungen zu gefundenen faktischen Unstimmigkeiten"
+                                ],
+                                "confidence": number (0.0-1.0)
+                            }
+                            
+                            Wobei:
+                            - valid: true wenn alle überprüfbaren Fakten korrekt sind, false wenn Falschinformationen gefunden wurden
+                            - violationReasons: Liste mit detaillierten Erklärungen zu faktischen Unstimmigkeiten
+                            - confidence: Konfidenz in die faktische Bewertung (0.0-1.0)
+                            """.formatted(content))
             );
 
             ChatCompletionsOptions options = new ChatCompletionsOptions(messages)
-                .setTemperature(0.1)
-                .setMaxTokens(1000);
+                    .setTemperature(0.1)
+                    .setMaxTokens(1000);
 
             ChatCompletions chatCompletions = client.getChatCompletions(deploymentOrModelId, options);
             String responseContent = chatCompletions.getChoices().get(0).getMessage().getContent();
