@@ -100,13 +100,13 @@ const AnimalAvatars = {
 export default function Profile() {
     const user = {
         name: localStorage.getItem('username'),
-        handle: "@niklasson",
+        handle: localStorage.getItem('email'),
         bio: "🌍✨ Decolonizing my mind daily | queer, neurodivergent, eco-conscious anti-capitalist dreamer | amplifying marginalized voices & thriving in radical softness 🌱💜",
         location: "Hamburg, DE",
         link: "https://niklasson.com",
         joined: "Joined 2025",
-        followers: 5000,
-        following: 3,
+        followers: localStorage.getItem('followersCount'),
+        following: localStorage.getItem('followingCount'),
         status: {label: "Seed", icon: "🌿"},
         avatarAnimal: "dog", // Change to any of: fox, cat, dog, rabbit, bear, panda, frog, owl
     };
