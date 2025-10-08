@@ -33,7 +33,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("User registered successfully"));
+                .andExpect(jsonPath("$.message").value("User registered successfully"));
     }
 
     @Test
@@ -54,6 +54,6 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Username already exists"));
+                .andExpect(jsonPath("$.error").value("Username already exists"));
     }
 }

@@ -22,7 +22,11 @@ public class PostController {
     @Autowired
     private FriendRequestService friendRequestService;
 
-    private AIValidationService aiValidationService;
+    private final AIValidationService aiValidationService;
+    @Autowired
+    public PostController(AIValidationService aiValidationService) {
+        this.aiValidationService = aiValidationService;
+    }
 
     @PostMapping("/create")
     public Post createPost(@RequestParam String authorUsername, @RequestParam String content) {
