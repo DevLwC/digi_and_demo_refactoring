@@ -1,87 +1,65 @@
-import React from 'react'
-import './Store.css'
+import React from "react";
+import "./Store.css";
 
-// TODO: implement the store items into an database and give and array of objects to the frontend
-const items = [
+const storeItems = [
     {
         id: 1,
-        image: '/shop/castle.png',
-        title: 'Celestial Cats',
-        amount: 210,
+        name: "Eco Badge",
+        desc: "Show off your eco-consciousness.",
+        price: "50 points",
+        img: "/badges/eco.png"
     },
     {
         id: 2,
-        image: '/shop/dragon.png',
-        title: 'Dragon Riders',
-        amount: 260,
+        name: "Avatar: Fox",
+        desc: "Unlock the fox avatar.",
+        price: "100 points",
+        img: "/avatars/fox.png"
     },
     {
         id: 3,
-        image: '/shop/camel.png',
-        title: 'Desert Exporers',
-        amount: 180,
+        name: "Avatar: Panda",
+        desc: "Unlock the panda avatar.",
+        price: "100 points",
+        img: "/avatars/panda.png"
     },
     {
         id: 4,
-        image: '/shop/moon.png',
-        title: 'Cloud Friends',
-        amount: 170,
+        name: "Custom Title",
+        desc: "Set a custom profile title.",
+        price: "200 points",
+        img: "/icons/title.png"
     },
-    {
-        id: 5,
-        image: '/shop/slime.png',
-        title: 'Monster Party',
-        amount: 250,
-    },
-    {
-        id: 6,
-        image: '/shop/pizza.png',
-        title: 'Galcctic Garden',
-        amount: 160,
-    },
-]
+];
 
-function Store() {
-    // TODO: balance and item purchase logic
-    const balance = 225
-
+export default function Store() {
     return (
-        <div className="store-root">
-            {/* Header */}
-            <div className="store-header">
-                <div className="store-header__balance">
-                    <img src="/shop/currency.png" alt="Currency" className="store-header__currency"/>
-                    <span className="store-header__amount">{balance}</span>
-                    {/*<img src="/assets/shop/settings.svg" alt="Settings" className="store-header__settings"/>*/}
-                </div>
-            </div>
-            {/* Title */}
-            <div className="store-title">
-                <h2 className="store-title__text">COSMETIC STORE</h2>
-            </div>
-            {/* Store Grid */}
-            {/* TODO: the whole screen is scrollable, but only the grid container with the items should be*/}
-            <div className="store-grid-container">
-                <div className="store-grid">
-                    {items.map(item => (
-                        <button
-                            key={item.id}
-                            className="store-item store-item--clickable"
-                            onClick={() => handleItemClick(item)}
-                            type="button"
-                        >
-                            <img src={item.image} alt={item.title} className="store-item__image"/>
-                            <div className="store-item__title">{item.title}</div>
-                            <div className="store-item__price">
-                                <img src="/shop/currency.png" alt="Currency" className="store-item__currency"/>
-                                <span>{item.amount} ORO</span>
-                            </div>
-                        </button>
-                    ))}
-                </div>
+        <div className="store-bg">
+            <div className="store-center-container">
+                <main className="store" role="main">
+                    <section className="card">
+                        <h2 className="store__title">Store</h2>
+                        <div className="store__grid">
+                            {storeItems.map(item => (
+                                <div key={item.id} className="store__item">
+                                    <img
+                                        src={item.img}
+                                        alt={item.name}
+                                        className="store__item-img"
+                                        loading="lazy"
+                                    />
+                                    <div className="store__item-name">{item.name}</div>
+                                    <div className="store__item-desc">{item.desc}</div>
+                                    <div className="store__item-price">{item.price}</div>
+                                    <button className="store__item-btn" type="button">
+                                        Redeem
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </main>
             </div>
         </div>
-    )
+    );
 }
-
-export default Store

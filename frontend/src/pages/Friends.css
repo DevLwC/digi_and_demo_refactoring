@@ -1,88 +1,163 @@
 :root {
-    --bg: #f7f8fa;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #667085;
-    --primary: #2563eb;
-    --accent: #e8f0ff;
-    --ring: rgba(37, 99, 235, 0.35);
-    --radius: 16px;
-    --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --bg: #eaf6e9;
+    --bg-gradient: linear-gradient(180deg, #eaf6e9 0%, #c6e6c3 100%);
+    --card: #fff;
+    --text: #355c35;
+    --muted: #4b6c4b;
+    --primary: #8fd18f;
+    --primary-light: #b6e2b6;
+    --accent: #c6e6c3;
+    --ring: rgba(76, 175, 80, 0.12);
+    --radius: 20px;
+    --shadow: 0 8px 24px rgba(76, 175, 80, 0.12);
 }
 
-.Friends {
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 0;
+.friends-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
+}
+
+.friends-center-container {
     min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.friends {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 8px 16px 96px;
+    background: var(--bg-gradient);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    padding: 24px;
 }
 
 .tabs {
     display: flex;
     gap: 8px;
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100vw;
-    margin: 0;
-    padding: 0 0 0 16px;
-    background: var(--card);
-    z-index: 10;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
-    border-top: none;
+    margin: 0 0 16px 0;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--primary-light);
+    background: transparent;
 }
 
 .tab {
-    padding: 8px 12px;
-    border-radius: 10px;
+    padding: 8px 16px;
+    border-radius: 8px;
     background: transparent;
     border: 1px solid transparent;
     color: var(--muted);
     font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .tab.is-active {
-    background: #f4f7ff;
+    background: var(--primary-light);
     color: var(--primary);
-    border-color: #e5edff;
+    border-color: var(--primary-light);
 }
 
-.TabContent {
-    padding: 16px;
+.form-control {
+    width: 100%;
+    background: #f6fff4;
+    border: 2px solid var(--primary-light);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    margin-bottom: 18px;
+    box-sizing: border-box;
 }
-.RequestsHeader {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
+
+.SearchResultCard {
     display: flex;
     align-items: center;
-    gap: 8px;
+    background: var(--accent);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px var(--ring);
 }
 
-.RequestCount {
-    background: #18192b;
-    color: #fff;
+.SearchResultAvatar {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    padding: 2px 8px;
-    font-size: 14px;
-    margin-left: 8px;
-    font-weight: 500;
+    background: var(--card);
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.SearchResultName {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.SearchResultStatus {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 0.95rem;
+    margin-left: 16px;
+    font-weight: 600;
+}
+
+.SearchResultBtn {
+    background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    margin-left: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.SearchResultBtn:hover {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
 }
 
 .RequestCard {
     display: flex;
     align-items: center;
-    background: #e9ebef;
+    background: var(--accent);
     border-radius: 12px;
     padding: 20px 24px;
     margin-bottom: 16px;
-    box-shadow: none;
+    box-shadow: 0 1px 4px var(--ring);
     min-height: 80px;
 }
 
@@ -90,7 +165,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--card);
     margin-right: 16px;
     display: flex;
     align-items: center;
@@ -108,20 +183,20 @@
 
 .RequestName {
     font-weight: 600;
-    font-size: 16px;
+    font-size: 1.1rem;
     margin-bottom: 2px;
-    color: #0f172a;
+    color: var(--text);
 }
 
 .RequestUsername {
-    color: #667085;
-    font-size: 14px;
+    color: var(--muted);
+    font-size: 0.95rem;
     margin-bottom: 2px;
 }
 
 .RequestTime {
-    color: #667085;
-    font-size: 13px;
+    color: var(--muted);
+    font-size: 0.9rem;
 }
 
 .RequestActions {
@@ -131,7 +206,7 @@
 }
 
 .RequestBtn {
-    background: #18192b;
+    background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -147,79 +222,16 @@
 
 .RequestBtn.decline {
     background: #fff;
-    color: #18192b;
-    border: 1px solid #e5e7eb;
-}
-.SearchBar {
-    width: 100%;
-    background: #f4f5f7;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 16px;
-    margin-bottom: 24px;
-    box-sizing: border-box;
+    color: var(--primary);
+    border: 1px solid var(--primary-light);
 }
 
-.SearchResultCard {
-    display: flex;
-    align-items: center;
-    background: transparent;
-    border-radius: 12px;
-    padding: 12px 0;
-    margin-bottom: 8px;
-}
+@media (max-width: 700px) {
+    .friends {
+        padding: 8px 4px 48px;
+    }
 
-.SearchResultAvatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #fff;
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.SearchResultInfo {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.SearchResultName {
-    font-weight: 600;
-    font-size: 16px;
-    color: #0f172a;
-}
-
-.SearchResultUsername {
-    color: #667085;
-    font-size: 14px;
-}
-
-.SearchResultStatus {
-    background: #f4f5f7;
-    color: #18192b;
-    border-radius: 8px;
-    padding: 4px 12px;
-    font-size: 14px;
-    margin-left: 16px;
-}
-
-.SearchResultBtn {
-    background: #18192b;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 16px;
-    font-size: 14px;
-    margin-left: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.2s;
+    .card {
+        padding: 12px;
+    }
 }
