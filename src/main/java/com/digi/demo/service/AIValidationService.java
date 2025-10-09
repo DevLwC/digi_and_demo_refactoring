@@ -79,6 +79,7 @@ public class AIValidationService {
             logger.error("Fehler bei der Content-Moderation", e);
             ModerationResponse fallbackResponse = new ModerationResponse();
             fallbackResponse.setValid(false);
+            fallbackResponse.setFactChecked(false);
             fallbackResponse.setEmotionalIntelligence(0);
             fallbackResponse.setViolationReasons(Collections.singletonList("Fehler bei der Verarbeitung: " + e.getMessage()));
             fallbackResponse.setConfidence(0.0f);
@@ -129,6 +130,7 @@ public class AIValidationService {
                     new ChatRequestSystemMessage("""
                             Du bist ein Faktenprüfer für eine politische Social-Media-Plattform.
                             Deine Aufgabe ist es, Aussagen ausschließlich auf ihre faktische Richtigkeit zu überprüfen.
+                            Ermögliche einen spielraum für Ausdrücke, Abkürzungen stilistische Mitte, Formulierungen und Synonymen, konzentriere dich auf klare Falschinformationen.
                             
                             Prüfe dabei:
                             1. Überprüfbare Fakten und Statistiken
@@ -150,6 +152,7 @@ public class AIValidationService {
                             Antworte ausschließlich im folgenden JSON-Format:
                             {
                                 "valid": boolean,
+                                "factChecked": boolean,
                                 "violationReasons": [
                                     "Detaillierte Erklärungen zu gefundenen faktischen Unstimmigkeiten"
                                 ],
@@ -157,7 +160,8 @@ public class AIValidationService {
                             }
                             
                             Wobei:
-                            - valid: true wenn alle überprüfbaren Fakten korrekt sind, false wenn Falschinformationen gefunden wurden
+                            - valid: false, wenn faktische Unstimmigkeiten gefunden wurden, sonst true. Im zweifelsfall true
+                            - factChecked: true wenn die Faktenprüfung durchgeführt wurde und die Fakten eindeutig bewertet werden konnten, sonst false
                             - violationReasons: Liste mit detaillierten Erklärungen zu faktischen Unstimmigkeiten
                             - confidence: Konfidenz in die faktische Bewertung (0.0-1.0)
                             """.formatted(content))
@@ -175,6 +179,7 @@ public class AIValidationService {
             logger.error("Fehler bei der Faktenprüfung", e);
             ModerationResponse fallbackResponse = new ModerationResponse();
             fallbackResponse.setValid(false);
+            fallbackResponse.setFactChecked(false);
             fallbackResponse.setViolationReasons(Collections.singletonList("Fehler bei der Faktenprüfung: " + e.getMessage()));
             fallbackResponse.setConfidence(0.0f);
             return fallbackResponse;
