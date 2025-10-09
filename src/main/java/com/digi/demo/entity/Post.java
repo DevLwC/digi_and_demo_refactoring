@@ -17,6 +17,11 @@ public class Post {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Lob
+    private byte[] imageData;
+
+    // TODO: add a field for image validation checks
+
     public Long getId() {
         return id;
     }
@@ -40,5 +45,11 @@ public class Post {
     }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    public byte[] getImageData() {
+        return imageData;
+    }
+    public void setImageData(byte[] imageUrl) {
+        this.imageData = imageUrl;
     }
 }

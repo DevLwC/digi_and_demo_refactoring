@@ -12,10 +12,11 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public Post createPost(User author, String content) {
+    public Post createPost(User author, String content, byte[] imageData) {
         Post post = new Post();
         post.setAuthor(author);
         post.setContent(content);
+        post.setImageData(imageData);
         return postRepository.save(post);
     }
 

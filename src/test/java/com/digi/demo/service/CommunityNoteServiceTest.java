@@ -31,7 +31,7 @@ class CommunityNoteServiceTest {
         User noteAuthor = userService.registerUser("testuser2", "pass123", "test2@example.com");
 
         // Create a post
-        Post post = postService.createPost(postAuthor, "Test post content");
+        Post post = postService.createPost(postAuthor, "Test post content", null);
 
         // Create a note
         CommunityNote note = noteService.createNote(post, noteAuthor, "This needs context because...");
@@ -54,7 +54,7 @@ class CommunityNoteServiceTest {
         User noteAuthor = userService.registerUser("voter2", "pass123", "voter2@example.com");
         User voter = userService.registerUser("voter3", "pass123", "voter3@example.com");
 
-        Post post = postService.createPost(postAuthor, "Content to be fact-checked");
+        Post post = postService.createPost(postAuthor, "Content to be fact-checked", null);
         CommunityNote note = noteService.createNote(post, noteAuthor, "Fact check note");
 
         // Test voting

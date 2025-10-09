@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import './Posts.css'
+import {API_BASE_URL} from "../config.js";
 
 function Posts() {
     const [content, setContent] = useState('')
@@ -12,11 +13,27 @@ function Posts() {
         }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setMessage('Post creation not implemented yet.')
-        setContent('')
-        setImage(null)
+        const formData = new FormData();
+        formData.append('authorUsername', localStorage.getItem('username'));
+        formData.append('content', content);
+        if (image) {
+            formData.append('image', image);
+        }
+        const res = await fetch(`${API_BASE_URL}/api/posts/create`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+        const data = await res.json();
+        if (res.ok) {
+            setMessage('Post created successfully!');
+            setContent('');
+            setImage(null);
+        } else {
+            setMessage(data.error || 'Failed to create post.');
+        }
     }
 
     return (

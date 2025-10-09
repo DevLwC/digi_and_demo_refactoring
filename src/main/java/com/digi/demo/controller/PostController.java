@@ -10,6 +10,12 @@ import com.digi.demo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -29,8 +35,13 @@ public class PostController {
         this.aiValidationService = aiValidationService;
     }
 
-    @PostMapping("/create")
-    public Post createPost(@RequestParam String authorUsername, @RequestParam String content) {
+    @PostMapping(value = "/create", consumes = {"multipart/form-data"})
+    public Post createPost(
+            @RequestParam String authorUsername,
+            @RequestParam String content,
+            @RequestParam(required = false) MultipartFile image
+    ) throws IOException {
+
 
         var validatePost = aiValidationService.validateContent(content);
         var validateFacts = aiValidationService.validateFactAccuracy(content);
@@ -43,7 +54,11 @@ public class PostController {
         //ToDo: dem User validePost.getViolationReasons() und validateFacts.getViolationReasons() anzeigen
 
         User author = userRepository.findByUsername(authorUsername).orElseThrow();
-        return postService.createPost(author, content);
+        byte[] imageData = null;
+        if (image != null && !image.isEmpty()) {
+           imageData = image.getBytes();
+        }
+        return postService.createPost(author, content, imageData);
     }
 
     // !IMPORTANT maybe the feed should be paginated in a real app/ limited to number or receent posts

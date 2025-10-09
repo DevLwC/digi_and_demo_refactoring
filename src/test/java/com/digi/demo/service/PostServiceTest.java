@@ -26,9 +26,10 @@ class PostServiceTest {
     @Test
     void testCreateAndGetPosts() {
         User author = userRepository.save(new User("alice", "pass", "alice@example.com"));
-        Post post = postService.createPost(author, "Hello world!");
+        Post post = postService.createPost(author, "Hello world!", null);
         assertNotNull(post.getId());
         assertEquals("Hello world!", post.getContent());
+        assertNull(post.getImageData());
 
         List<Post> posts = postService.getPostsByFriends(Collections.singletonList(author));
         assertFalse(posts.isEmpty());
