@@ -304,7 +304,14 @@ export default function Profile() {
                                 ) : (
                                     posts.map((post) => (
                                         <article key={post.id} className="post card">
-                                            <div className="post__media" />
+                                            {post.imageData && (
+                                                <img
+                                                    src={`data:image/png;base64,${post.imageData}`}
+                                                    alt="Post"
+                                                    className="post__media"
+                                                    style={{maxWidth: "100%", borderRadius: "12px", marginBottom: "8px"}}
+                                                />
+                                            )}
                                             <div className="post__body">
                                                 <div><strong>{post.author.username}</strong></div>
                                                 <div>{post.content}</div>
