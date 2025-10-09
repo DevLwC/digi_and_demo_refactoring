@@ -85,6 +85,12 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok(Map.of("message", "Logout successful"));
+    }
 
 
     // Inner classes for request DTOs

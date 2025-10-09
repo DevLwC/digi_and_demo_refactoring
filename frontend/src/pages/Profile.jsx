@@ -98,6 +98,16 @@ const AnimalAvatars = {
     ),
 }
 
+function handleLogout() {
+    localStorage.clear();
+    fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+    }).finally(() => {
+        window.location.href = '/login';
+    });
+}
+
 // 2. Add avatarAnimal to user
 export default function Profile() {
     const [bio, setBio] = useState(localStorage.getItem('bio') || "No bio set");
@@ -274,6 +284,7 @@ export default function Profile() {
                                 </button>
                             ))}
                         </nav>
+                        <button className="btn btn--ghost" type="button" onClick={handleLogout}>Log out</button>
                     </section>
                     {/* Content area */}
                     <section className="content">
