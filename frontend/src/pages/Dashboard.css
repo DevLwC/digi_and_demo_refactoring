@@ -143,3 +143,7 @@
 .post__body {
     color: #000;
 }
+.post__actions button span {
+    color: #222;
+    background: transparent;
+}

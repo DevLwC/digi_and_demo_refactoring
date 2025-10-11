@@ -1,8 +1,10 @@
 package com.digi.demo.controller;
 
+import com.digi.demo.dto.PostDto;
 import com.digi.demo.entity.FriendRequest;
 import com.digi.demo.entity.Post;
 import com.digi.demo.entity.User;
+import com.digi.demo.repository.PostLikeRepository;
 import com.digi.demo.repository.UserRepository;
 import com.digi.demo.service.AIValidationService;
 import com.digi.demo.service.FriendRequestService;
@@ -11,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.digi.demo.entity.PostLike;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -28,6 +28,8 @@ public class PostController {
     private UserRepository userRepository;
     @Autowired
     private FriendRequestService friendRequestService;
+    @Autowired
+    private PostLikeRepository postLikeRepository;
 
     private final AIValidationService aiValidationService;
     @Autowired
@@ -63,7 +65,7 @@ public class PostController {
 
     // !IMPORTANT maybe the feed should be paginated in a real app/ limited to number or receent posts
     @GetMapping("/feed")
-    public List<Post> getFeed(@RequestParam String username) {
+    public List<PostDto> getFeed(@RequestParam String username) {
         User user = userRepository.findByUsername(username).orElseThrow();
         List<FriendRequest> friends = friendRequestService.getFriends(user);
         List<User> friendUsers = new ArrayList<>();
@@ -78,7 +80,24 @@ public class PostController {
         feed.addAll(postService.getPostsByFriends(friendUsers));
         friendUsers.add(user);
         feed.addAll(postService.getPostsByOthers(friendUsers));
-        return feed;
+        return feed.stream()
+                .map(post -> new PostDto(post, postLikeRepository.countByPost(post)))
+                .toList();
+    }
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<?> likePost(@PathVariable Long postId, @RequestParam String username) {
+        User user = userRepository.findByUsername(username).orElseThrow();
+        Post post = postService.getPostById(postId);
+        if (post == null) return ResponseEntity.notFound().build();
+        if (postLikeRepository.existsByUserAndPost(user, post)) {
+            return ResponseEntity.badRequest().body("Already liked");
+        }
+        PostLike like = new PostLike();
+        like.setUser(user);
+        like.setPost(post);
+        postLikeRepository.save(like);
+        return ResponseEntity.ok().body("Liked");
     }
 
     @GetMapping("/ownPosts")

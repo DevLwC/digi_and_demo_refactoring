@@ -4,68 +4,6 @@ import "./Profile.css"
 import {getCurrentUser} from "../api/auth.js";
 import {API_BASE_URL} from "../config.js"; // For card and layout styles
 
-// Reuse animal avatars from Profile.jsx
-const AnimalAvatars = {
-    dog: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"
-             aria-label="Dog avatar">
-            <ellipse cx="32" cy="36" rx="22" ry="20" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="32" cy="46" rx="6" ry="3" fill="#f9d29d"/>
-            <ellipse cx="12" cy="24" rx="6" ry="12" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="52" cy="24" rx="6" ry="12" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    // Add other animals if needed
-    cat: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"
-             aria-label="Cat avatar">
-            <circle cx="32" cy="36" r="24" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="32" cy="44" rx="12" ry="8" fill="#f9d29d"/>
-            <ellipse cx="24" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <path d="M32 48c2 2 6 2 8 0" stroke="#2c3e50" strokeWidth="2" strokeLinecap="round"/>
-            <polygon points="16,24 24,12 28,28" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <polygon points="48,24 40,12 36,28" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    fox: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"
-             aria-label="Fox avatar">
-            <circle cx="32" cy="32" r="30" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <path d="M20 24c2-6 10-10 12-10s10 4 12 10c0 8-4 18-12 18S20 32 20 24z" fill="#f39c12" stroke="#d35400"
-                  strokeWidth="2"/>
-            <circle cx="26" cy="28" r="3" fill="#2c3e50"/>
-            <circle cx="38" cy="28" r="3" fill="#2c3e50"/>
-            <path d="M28 38c2 2 6 2 8 0" stroke="#2c3e50" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M24 18l-6-6M40 18l6-6" stroke="#d35400" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-    ),
-    rabbit: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"
-             aria-label="Rabbit avatar">
-            <ellipse cx="32" cy="40" rx="18" ry="16" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="44" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="44" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="32" cy="52" rx="6" ry="3" fill="#f9d29d"/>
-            <rect x="22" y="8" width="6" height="24" rx="3" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-            <rect x="36" y="8" width="6" height="24" rx="3" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    owl: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img"
-             aria-label="Owl avatar">
-            <ellipse cx="32" cy="40" rx="18" ry="16" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="36" rx="5" ry="7" fill="#fff" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="40" cy="36" rx="5" ry="7" fill="#fff" stroke="#e67e22" strokeWidth="2"/>
-            <circle cx="24" cy="36" r="2" fill="#2c3e50"/>
-            <circle cx="40" cy="36" r="2" fill="#2c3e50"/>
-            <polygon points="32,44 28,52 36,52" fill="#e67e22"/>
-            <polygon points="20,20 32,8 44,20" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-}
 
 const activity = [
     {icon: "🌱", text: "You earned a new badge: Seedling"},
@@ -74,33 +12,13 @@ const activity = [
     {icon: "🔖", text: "Bookmarked 'Eco-conscious living tips'"},
 ]
 
-// Placeholder posts feed
-const posts = [
-    {
-        user: {name: "Alex", avatarAnimal: "cat"},
-        content: "Just planted my first tomato! 🍅🌱",
-        time: "2h ago"
-    },
-    {
-        user: {name: "Samira", avatarAnimal: "fox"},
-        content: "Eco-market this weekend was amazing. Got some local honey! 🦊🍯",
-        time: "4h ago"
-    },
-    {
-        user: {name: "Jordan", avatarAnimal: "rabbit"},
-        content: "Reading about radical softness. Anyone got book recs? 🐇📚",
-        time: "6h ago"
-    },
-    {
-        user: {name: "Maya", avatarAnimal: "owl"},
-        content: "Shared a new post: 'Decolonizing my mind daily...' 🦉",
-        time: "8h ago"
-    },
-]
 
 export default function Dashboard() {
     const [user, setUser] = useState(null);
     const [avatarSvg, setAvatarSvg] = useState(null);
+
+    const [posts, setPosts] = useState([]);
+    const [avatars, setAvatars] = useState({});
 
     useEffect(() => {
         getCurrentUser()
@@ -125,6 +43,26 @@ export default function Dashboard() {
                 window.location.href="/login";
             });
     }, []);
+
+    useEffect(() => {
+        if (user && user.name) {
+            fetch(`${API_BASE_URL}/api/posts/feed?username=${user.name}`, { credentials: "include" })
+                .then(res => res.json())
+                .then(async postsData => {
+                    // Fetch avatars for each post author
+                    const avatarPromises = postsData.map(post =>
+                        fetch(`${API_BASE_URL}/api/users/${post.author.id}/avatar`, { credentials: "include" })
+                            .then(res => res.text())
+                            .then(svg => ({ id: post.author.id, svg }))
+                    );
+                    const avatarResults = await Promise.all(avatarPromises);
+                    const avatarMap = {};
+                    avatarResults.forEach(a => { avatarMap[a.id] = a.svg; });
+                    setAvatars(avatarMap);
+                    setPosts(postsData);
+                });
+        }
+    }, [user]);
 
     if (!user) {
         return <div>Loading...</div>; // or a spinner
@@ -170,16 +108,29 @@ export default function Dashboard() {
                                 <article key={i} className="post card">
                                     <div style={{display: "flex", alignItems: "center", gap: "12px", padding: "16px"}}>
                                         <div className="avatar avatar--animal" style={{width: 48, height: 48}}>
-                                            {AnimalAvatars[post.user.avatarAnimal] || <span>🐾</span>}
+                                            {avatars[post.author.id] ?
+                                                <span dangerouslySetInnerHTML={{ __html: avatars[post.author.id] }} /> :
+                                                <span>🐾</span>
+                                            }
                                         </div>
                                         <div>
-                                            <div style={{fontWeight: 600, color: "var(--text)"}}>{post.user.name}</div>
-                                            <div style={{fontSize: "0.95rem", color: "var(--muted)"}}>{post.time}</div>
+                                            <div style={{fontWeight: 600, color: "var(--text)"}}>{post.author.username}</div>
+                                            <div style={{fontSize: "0.95rem", color: "var(--muted)"}}>
+                                                {new Date(post.createdAt).toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="post__body" style={{paddingTop: 0}}>
                                         {post.content}
+                                        {post.imageData &&
+                                            <img
+                                                src={`data:image/png;base64,${post.imageData}`}
+                                                alt="Post"
+                                                style={{maxWidth: "100%", marginTop: "12px"}}
+                                            />
+                                        }
                                     </div>
+                                    {/* Actions can stay unchanged */}
                                     <div className="post__actions" style={{
                                         display: "flex",
                                         gap: "18px",
@@ -191,9 +142,29 @@ export default function Dashboard() {
                                                 style={{background: "none", border: "none", cursor: "pointer"}}>
                                             💬 <span style={{fontSize: "0.95em"}}>0</span>
                                         </button>
-                                        <button type="button" title="Like"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            ❤️ <span style={{fontSize: "0.95em"}}>0</span>
+                                        <button
+                                            type="button"
+                                            title="Like"
+                                            style={{background: "none", border: "none", cursor: "pointer"}}
+                                            onClick={() => {
+                                                fetch(`${API_BASE_URL}/api/posts/${post.id}/like?username=${user.name}`, {
+                                                    method: "POST",
+                                                    credentials: "include"
+                                                })
+                                                    .then(res => {
+                                                        if (res.ok) {
+                                                            setPosts(prevPosts =>
+                                                                prevPosts.map(p =>
+                                                                    p.id === post.id
+                                                                        ? { ...p, likeCount: p.likeCount + 1 }
+                                                                        : p
+                                                                )
+                                                            );
+                                                        }
+                                                    });
+                                            }}
+                                        >
+                                            ❤️ <span style={{fontSize: "0.95em"}}>{post.likeCount}</span>
                                         </button>
                                         <button type="button" title="Share"
                                                 style={{background: "none", border: "none", cursor: "pointer"}}>

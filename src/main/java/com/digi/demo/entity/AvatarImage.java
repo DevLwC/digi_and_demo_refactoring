@@ -1,9 +1,11 @@
 package com.digi.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "avatar_images")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AvatarImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
