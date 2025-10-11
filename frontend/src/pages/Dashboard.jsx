@@ -1,6 +1,8 @@
-import React from "react"
+import React, {useState, useEffect} from "react"
 import "./Dashboard.css"
-import "./Profile.css" // For card and layout styles
+import "./Profile.css"
+import {getCurrentUser} from "../api/auth.js";
+import {API_BASE_URL} from "../config.js"; // For card and layout styles
 
 // Reuse animal avatars from Profile.jsx
 const AnimalAvatars = {
@@ -65,13 +67,6 @@ const AnimalAvatars = {
     ),
 }
 
-const user = {
-    name: localStorage.getItem('username'),
-    avatarAnimal: "dog",
-    notifications: 3,
-    streak: localStorage.getItem('streakCount'),
-}
-
 const activity = [
     {icon: "🌱", text: "You earned a new badge: Seedling"},
     {icon: "📝", text: "You posted: 'Decolonizing my mind daily...'"},
@@ -104,13 +99,47 @@ const posts = [
 ]
 
 export default function Dashboard() {
+    const [user, setUser] = useState(null);
+    const [avatarSvg, setAvatarSvg] = useState(null);
+
+    useEffect(() => {
+        getCurrentUser()
+            .then(userData => {
+                setUser({
+                    id: userData.id,
+                    name: userData.username,
+                    notifications: 3,
+                    streak: userData.streakCount,
+                });
+                if (userData.id) {
+                    fetch(`${API_BASE_URL}/api/users/${userData.id}/avatar`, {
+                        credentials: 'include'
+                    })
+                        .then(res => res.text())
+                        .then(svg => setAvatarSvg(svg))
+                        .catch(() => setAvatarSvg(null));
+                }
+                // could update the local storage too if needed
+            })
+            .catch(() => {
+                window.location.href="/login";
+            });
+    }, []);
+
+    if (!user) {
+        return <div>Loading...</div>; // or a spinner
+    }
     return (
         <div className="dashboard-bg">
             <div className="dashboard-center-container">
                 <main className="dashboard" role="main">
                     <section className="card dashboard__welcome">
                         <div className="dashboard__avatar avatar avatar--animal">
-                            {AnimalAvatars[user.avatarAnimal]}
+                            {avatarSvg ? (
+                                <span dangerouslySetInnerHTML={{ __html: avatarSvg }} />
+                            ) : (
+                                <span>Loading...</span>
+                            )}
                         </div>
                         <div>
                             <h2 className="dashboard__greeting">Welcome back, <span

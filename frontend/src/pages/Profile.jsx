@@ -2,101 +2,7 @@ import React from "react"
 import {useState, useEffect} from "react";
 import "./Profile.css"
 import {API_BASE_URL} from "../config.js";
-
-// 1. Animal SVGs as components
-const AnimalAvatars = {
-    fox: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Fox avatar">
-            <circle cx="32" cy="32" r="30" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <path d="M20 24c2-6 10-10 12-10s10 4 12 10c0 8-4 18-12 18S20 32 20 24z" fill="#f39c12" stroke="#d35400"
-                  strokeWidth="2"/>
-            <circle cx="26" cy="28" r="3" fill="#2c3e50"/>
-            <circle cx="38" cy="28" r="3" fill="#2c3e50"/>
-            <path d="M28 38c2 2 6 2 8 0" stroke="#2c3e50" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M24 18l-6-6M40 18l6-6" stroke="#d35400" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-    ),
-    cat: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Cat avatar">
-            <circle cx="32" cy="36" r="24" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="32" cy="44" rx="12" ry="8" fill="#f9d29d"/>
-            <ellipse cx="24" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <path d="M32 48c2 2 6 2 8 0" stroke="#2c3e50" strokeWidth="2" strokeLinecap="round"/>
-            <polygon points="16,24 24,12 28,28" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <polygon points="48,24 40,12 36,28" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    dog: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Dog avatar">
-            <ellipse cx="32" cy="36" rx="22" ry="20" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="32" cy="46" rx="6" ry="3" fill="#f9d29d"/>
-            <ellipse cx="12" cy="24" rx="6" ry="12" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="52" cy="24" rx="6" ry="12" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    rabbit: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Rabbit avatar">
-            <ellipse cx="32" cy="40" rx="18" ry="16" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="44" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="40" cy="44" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="32" cy="52" rx="6" ry="3" fill="#f9d29d"/>
-            <rect x="22" y="8" width="6" height="24" rx="3" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-            <rect x="36" y="8" width="6" height="24" rx="3" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-    bear: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Bear avatar">
-            <ellipse cx="32" cy="36" rx="20" ry="18" fill="#f9d29d" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="20" cy="20" rx="6" ry="6" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="44" cy="20" rx="6" ry="6" fill="#f9d29d" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="26" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="38" cy="36" rx="3" ry="4" fill="#2c3e50"/>
-            <ellipse cx="32" cy="44" rx="5" ry="3" fill="#fff7f0"/>
-        </svg>
-    ),
-    panda: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Panda avatar">
-            <ellipse cx="32" cy="36" rx="20" ry="18" fill="#fff" stroke="#2c3e50" strokeWidth="3"/>
-            <ellipse cx="18" cy="20" rx="7" ry="9" fill="#2c3e50"/>
-            <ellipse cx="46" cy="20" rx="7" ry="9" fill="#2c3e50"/>
-            <ellipse cx="24" cy="36" rx="5" ry="7" fill="#2c3e50"/>
-            <ellipse cx="40" cy="36" rx="5" ry="7" fill="#2c3e50"/>
-            <ellipse cx="32" cy="44" rx="5" ry="3" fill="#f9d29d"/>
-        </svg>
-    ),
-    frog: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Frog avatar">
-            <ellipse cx="32" cy="40" rx="18" ry="14" fill="#8fd18f" stroke="#355c35" strokeWidth="3"/>
-            <ellipse cx="20" cy="28" rx="6" ry="6" fill="#8fd18f" stroke="#355c35" strokeWidth="2"/>
-            <ellipse cx="44" cy="28" rx="6" ry="6" fill="#8fd18f" stroke="#355c35" strokeWidth="2"/>
-            <circle cx="20" cy="28" r="2" fill="#2c3e50"/>
-            <circle cx="44" cy="28" r="2" fill="#2c3e50"/>
-            <ellipse cx="32" cy="48" rx="8" ry="3" fill="#fff7f0"/>
-        </svg>
-    ),
-    owl: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="88" height="88" role="img"
-             aria-label="Owl avatar">
-            <ellipse cx="32" cy="40" rx="18" ry="16" fill="#fff7f0" stroke="#e67e22" strokeWidth="3"/>
-            <ellipse cx="24" cy="36" rx="5" ry="7" fill="#fff" stroke="#e67e22" strokeWidth="2"/>
-            <ellipse cx="40" cy="36" rx="5" ry="7" fill="#fff" stroke="#e67e22" strokeWidth="2"/>
-            <circle cx="24" cy="36" r="2" fill="#2c3e50"/>
-            <circle cx="40" cy="36" r="2" fill="#2c3e50"/>
-            <polygon points="32,44 28,52 36,52" fill="#e67e22"/>
-            <polygon points="20,20 32,8 44,20" fill="#fff7f0" stroke="#e67e22" strokeWidth="2"/>
-        </svg>
-    ),
-}
+import AvatarModal from "../components/AvatarModal.jsx";
 
 function handleLogout() {
     localStorage.clear();
@@ -108,12 +14,13 @@ function handleLogout() {
     });
 }
 
-// 2. Add avatarAnimal to user
 export default function Profile() {
     const [bio, setBio] = useState(localStorage.getItem('bio') || "No bio set");
     const [location, setLocation] = useState(localStorage.getItem('location') || "");
     const [active, setActive] = useState("posts");
     const [posts, setPosts] = useState([]);
+    const [avatarSvg, setAvatarSvg] = useState(null);
+    const [showAvatarModal, setShowAvatarModal] = useState(false);
 
     const handleLocationChange = async (e) => {
         const newLocation = e.target.value;
@@ -154,7 +61,6 @@ export default function Profile() {
         followers: localStorage.getItem('followersCount'),
         following: localStorage.getItem('followingCount'),
         status: {label: "Seed", icon: "🌿"},
-        avatarAnimal: "dog", // Change to any of: fox, cat, dog, rabbit, bear, panda, frog, owl
     };
 
     const tabs = [
@@ -164,17 +70,62 @@ export default function Profile() {
     ];
 
     useEffect(() => {
+        // Fetch current user info to ensure session and localStorage are up-to-date
+        fetch(`${API_BASE_URL}/api/auth/me`, {credentials: 'include'})
+            .then(res => {
+                if (!res.ok) throw new Error('Not authenticated');
+                return res.json();
+            })
+            .then(userData => {
+                localStorage.setItem('userId', userData.id);
+                localStorage.setItem('username', userData.username);
+                localStorage.setItem('email', userData.email);
+                localStorage.setItem('createdAt', userData.createdAt);
+                localStorage.setItem('followersCount', userData.followersCount);
+                localStorage.setItem('followingCount', userData.followingCount);
+                // Now fetch avatar
+                if (userData.id) {
+                    fetch(`${API_BASE_URL}/api/users/${userData.id}/avatar`, {
+                        credentials: 'include'
+                    })
+                        .then(res => res.text())
+                        .then(svg => setAvatarSvg(svg))
+                        .catch(() => setAvatarSvg(null));
+                }
+            })
+            .catch(() => setAvatarSvg(null));
+    }, []);
+
+
+    useEffect(() => {
         if (active === "posts") {
             fetch(`${API_BASE_URL}/api/posts/ownPosts?username=${user.name}`, {
                 credentials: 'include'
             })
                 .then(res => res.json())
                 .then(data => setPosts(data))
-                .catch(err => {setPosts([]);
+                .catch(err => {
+                    setPosts([]);
                     console.error('Error fetching posts:', err)
                 });
         }
     }, [active, user.name]);
+
+    const handleAvatarSelect = async (animal) => {
+        const userId = localStorage.getItem('userId');
+        await fetch(`${API_BASE_URL}/api/users/updateAvatar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarAnimal: animal }),
+            credentials: 'include'
+        });
+        // Fetch and update avatar SVG
+        fetch(`${API_BASE_URL}/api/users/${userId}/avatar`, { credentials: 'include' })
+            .then(res => res.text())
+            .then(svg => setAvatarSvg(svg))
+            .catch(() => setAvatarSvg(null));
+        setShowAvatarModal(false);
+    };
 
     return (
         <div className="profile-bg">
@@ -185,9 +136,25 @@ export default function Profile() {
                         <div className="header__row">
                             <div className="header__left">
                                 {/* Animal avatar */}
-                                <div className="avatar avatar--animal" aria-hidden="true">
-                                    {AnimalAvatars[user.avatarAnimal]}
+                                <div
+                                    className="avatar avatar--animal"
+                                    aria-hidden="true"
+                                    style={{cursor: "pointer"}}
+                                    onClick={() => setShowAvatarModal(true)}
+                                >
+                                    {avatarSvg ? (
+                                        <span dangerouslySetInnerHTML={{__html: avatarSvg}}/>
+                                    ) : (
+                                        <span>Loading...</span>
+                                    )}
                                 </div>
+
+                                {showAvatarModal && (
+                                    <AvatarModal
+                                        onSelect={handleAvatarSelect}
+                                        onClose={() => setShowAvatarModal(false)}
+                                    />
+                                )}
                                 <div className="identity">
                                     <h1 className="identity__name">{user.name}</h1>
                                     <div className="identity__meta">
@@ -309,7 +276,11 @@ export default function Profile() {
                                                     src={`data:image/png;base64,${post.imageData}`}
                                                     alt="Post"
                                                     className="post__media"
-                                                    style={{maxWidth: "100%", borderRadius: "12px", marginBottom: "8px"}}
+                                                    style={{
+                                                        maxWidth: "100%",
+                                                        borderRadius: "12px",
+                                                        marginBottom: "8px"
+                                                    }}
                                                 />
                                             )}
                                             <div className="post__body">

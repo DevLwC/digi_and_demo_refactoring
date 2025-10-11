@@ -1,5 +1,6 @@
 package com.digi.demo.controller;
 
+import com.digi.demo.dto.UserDto;
 import com.digi.demo.entity.User;
 import com.digi.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,7 +83,18 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.status(404).body(Map.of("error", "User not found"));
         }
-        return ResponseEntity.ok(user);
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setBio(user.getBio());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setLocation(user.getLocation());
+        dto.setFollowersCount(user.getFollowersCount());
+        dto.setFollowingCount(user.getFollowingCount());
+        dto.setAvatarImageId(user.getAvatarImage() != null ? user.getAvatarImage().getId() : null);
+        dto.setStreakCount(user.getStreakCount());
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/logout")

@@ -1,11 +1,15 @@
 package com.digi.demo.controller;
 
+import com.digi.demo.entity.AvatarImage;
 import com.digi.demo.entity.User;
+import com.digi.demo.repository.AvatarImageRepository;
 import com.digi.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +18,8 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AvatarImageRepository avatarImageRepository;
 
     @GetMapping("/search")
     public List<User> searchUsers(@RequestParam String username) {
@@ -53,4 +59,51 @@ public class UserController {
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "Location updated successfully"));
     }
+
+    @GetMapping("/{id}/avatar")
+    public ResponseEntity<?> getUserAvatar(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null || user.getAvatarImage() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        AvatarImage avatar = avatarImageRepository.findById(user.getAvatarImage().getId()).orElse(null);
+
+        if (avatar == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String svg = new String(avatar.getImageData(), StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/svg+xml")
+                .body(svg);
+    }
+
+    @GetMapping("/avatars/full")
+    public ResponseEntity<?> getAllAvatarsWithData() {
+        List<AvatarImage> avatars = avatarImageRepository.findAll();
+        Map<String, String> avatarMap = avatars.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        AvatarImage::getName,
+                        avatar -> new String(avatar.getImageData(), java.nio.charset.StandardCharsets.UTF_8)
+                ));
+        return ResponseEntity.ok(avatarMap);
+    }
+
+
+    @PostMapping("/updateAvatar")
+    public ResponseEntity<?> updateAvatar(@RequestBody Map<String, String> body, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String username = authentication.getName();
+        String avatarAnimal = body.get("avatarAnimal");
+        User user = userRepository.findByUsername(username).orElse(null);
+        AvatarImage avatar = avatarImageRepository.findByName(avatarAnimal);
+        if (user == null || avatar == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User or avatar not found"));
+        }
+        user.setAvatarImage(avatar);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("message", "Avatar updated successfully"));
+    }
+
 }

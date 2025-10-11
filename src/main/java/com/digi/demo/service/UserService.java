@@ -1,6 +1,8 @@
 package com.digi.demo.service;
 
+import com.digi.demo.entity.AvatarImage;
 import com.digi.demo.entity.User;
+import com.digi.demo.repository.AvatarImageRepository;
 import com.digi.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +20,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AvatarImageRepository avatarImageRepository;
+
     public User registerUser(String username, String password, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Username already exists");
@@ -30,6 +35,9 @@ public class UserService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setEmail(email);
+
+        AvatarImage defaultAvatar = avatarImageRepository.findById(1L);
+        user.setAvatarImage(defaultAvatar);
 
         return userRepository.save(user);
     }

@@ -38,6 +38,10 @@ public class User {
 
     private LocalDateTime lastLoginDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_image_id")
+    private AvatarImage avatarImage;
+
     // Constructors
     public User() {
         this.createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/yyyy"));
@@ -88,6 +92,9 @@ public class User {
 
     public LocalDateTime getLastLoginDate() { return lastLoginDate; }
     public void setLastLoginDate(LocalDateTime lastLoginDate) { this.lastLoginDate = lastLoginDate;}
+
+    public AvatarImage getAvatarImage() { return avatarImage; }
+    public void setAvatarImage(AvatarImage avatarImage) { this.avatarImage = avatarImage; }
 }
 
 
