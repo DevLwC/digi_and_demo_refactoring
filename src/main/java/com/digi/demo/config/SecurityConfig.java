@@ -77,11 +77,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
+                .formLogin(form -> form.disable())
+                /*.formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
-                )
+                )*/
                 .logout(logout -> logout.permitAll())
                 .headers(headers -> headers.frameOptions().disable());
 
@@ -117,7 +118,7 @@ public class SecurityConfig {
             servletContext.getSessionCookieConfig().setHttpOnly(true);
             servletContext.getSessionCookieConfig().setName("JSESSIONID");
             servletContext.getSessionCookieConfig().setPath("/");
-            servletContext.getSessionCookieConfig().setDomain("digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
+            // servletContext.getSessionCookieConfig().setDomain("digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
         };
     }
 
