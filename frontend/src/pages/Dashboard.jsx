@@ -19,6 +19,7 @@ export default function Dashboard() {
 
     const [posts, setPosts] = useState([]);
     const [avatars, setAvatars] = useState({});
+    const [authError, setAuthError] = useState(false);
 
     useEffect(() => {
         getCurrentUser()
@@ -39,8 +40,11 @@ export default function Dashboard() {
                 }
                 // could update the local storage too if needed
             })
-            .catch(() => {
-                window.location.href="/login";
+            .catch((error) => {
+                console.error("Authentication error:", error);
+                // Instead of redirecting, you can set a state variable
+                setAuthError(true);
+                // Or handle it another way without causing a redirect loop
             });
     }, []);
 
@@ -64,8 +68,8 @@ export default function Dashboard() {
         }
     }, [user]);
 
-    if (!user) {
-        return <div>Loading...</div>; // or a spinner
+    if (authError) {
+        return <div>Please <a href="/login">login</a> to view your dashboard</div>;
     }
     return (
         <div className="dashboard-bg">
