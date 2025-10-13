@@ -13,7 +13,10 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://localhost:5173") // Vite dev server
+                        .allowedOrigins(
+                                "https://localhost:5173",
+                                "https://digi-and-demo-refactoring-aci.westeurope.azurecontainer.io"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
