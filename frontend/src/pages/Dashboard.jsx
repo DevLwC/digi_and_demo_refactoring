@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from "react"
 import "./Dashboard.css"
 import "./Profile.css"
-import {getCurrentUser} from "../api/auth.js";
-import {API_BASE_URL} from "../config.js"; // For card and layout styles
-
+import {getCurrentUser} from "../api/auth.js"
+import {API_BASE_URL} from "../config.js"
 
 const activity = [
     {icon: "🌱", text: "You earned a new badge: Seedling"},
@@ -12,65 +11,110 @@ const activity = [
     {icon: "🔖", text: "Bookmarked 'Eco-conscious living tips'"},
 ]
 
-
 export default function Dashboard() {
-    const [user, setUser] = useState(null);
-    const [avatarSvg, setAvatarSvg] = useState(null);
-
-    const [posts, setPosts] = useState([]);
-    const [avatars, setAvatars] = useState({});
-    const [authError, setAuthError] = useState(false);
+    const [user, setUser] = useState(null)
+    const [avatarSvg, setAvatarSvg] = useState(null)
+    const [posts, setPosts] = useState([])
+    const [avatars, setAvatars] = useState({})
+    const [authError, setAuthError] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
 
     useEffect(() => {
+        setLoading(true)
         getCurrentUser()
             .then(userData => {
+                if (!userData) {
+                    throw new Error("No user data received")
+                }
+
                 setUser({
                     id: userData.id,
                     name: userData.username,
                     notifications: 3,
-                    streak: userData.streakCount,
-                });
+                    streak: userData.streakCount || 0,
+                })
+
                 if (userData.id) {
-                    fetch(`${API_BASE_URL}/api/users/${userData.id}/avatar`, {
+                    return fetch(`${API_BASE_URL}/api/users/${userData.id}/avatar`, {
                         credentials: 'include'
                     })
                         .then(res => res.text())
                         .then(svg => setAvatarSvg(svg))
-                        .catch(() => setAvatarSvg(null));
+                        .catch(err => {
+                            console.error("Failed to fetch avatar:", err)
+                            setAvatarSvg(null)
+                        })
                 }
-                // could update the local storage too if needed
             })
             .catch((error) => {
-                console.error("Authentication error:", error);
-                // Instead of redirecting, you can set a state variable
-                setAuthError(true);
-                // Or handle it another way without causing a redirect loop
-            });
-    }, []);
+                console.error("Authentication error:", error)
+                setAuthError(true)
+                setError(error.message)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
 
     useEffect(() => {
         if (user && user.name) {
             fetch(`${API_BASE_URL}/api/posts/feed?username=${user.name}`, { credentials: "include" })
                 .then(res => res.json())
                 .then(async postsData => {
-                    // Fetch avatars for each post author
-                    const avatarPromises = postsData.map(post =>
-                        fetch(`${API_BASE_URL}/api/users/${post.author.id}/avatar`, { credentials: "include" })
-                            .then(res => res.text())
-                            .then(svg => ({ id: post.author.id, svg }))
-                    );
-                    const avatarResults = await Promise.all(avatarPromises);
-                    const avatarMap = {};
-                    avatarResults.forEach(a => { avatarMap[a.id] = a.svg; });
-                    setAvatars(avatarMap);
-                    setPosts(postsData);
-                });
+                    try {
+                        const avatarPromises = postsData.map(post =>
+                            fetch(`${API_BASE_URL}/api/users/${post.author.id}/avatar`, { credentials: "include" })
+                                .then(res => res.text())
+                                .then(svg => ({ id: post.author.id, svg }))
+                                .catch(() => ({ id: post.author.id, svg: null }))
+                        )
+                        const avatarResults = await Promise.all(avatarPromises)
+                        const avatarMap = {}
+                        avatarResults.forEach(a => { avatarMap[a.id] = a.svg })
+                        setAvatars(avatarMap)
+                        setPosts(postsData)
+                    } catch (err) {
+                        console.error("Error processing posts data:", err)
+                    }
+                })
+                .catch(err => console.error("Error fetching posts:", err))
         }
-    }, [user]);
+    }, [user])
+
+    if (loading) {
+        return (
+            <div className="dashboard-bg">
+                <div className="dashboard-center-container">
+                    <div>Loading...</div>
+                </div>
+            </div>
+        )
+    }
 
     if (authError) {
-        return <div>Please <a href="/login">login</a> to view your dashboard</div>;
+        return (
+            <div className="dashboard-bg">
+                <div className="dashboard-center-container">
+                    <div>
+                        {error ? `Error: ${error}` : 'Please'} <a href="/login">login</a> to view your dashboard
+                    </div>
+                </div>
+            </div>
+        )
     }
+
+    // Safety check - make sure user exists before rendering content
+    if (!user) {
+        return (
+            <div className="dashboard-bg">
+                <div className="dashboard-center-container">
+                    <div>Unable to load user data. Please <a href="/login">login</a> again.</div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="dashboard-bg">
             <div className="dashboard-center-container">
@@ -80,7 +124,7 @@ export default function Dashboard() {
                             {avatarSvg ? (
                                 <span dangerouslySetInnerHTML={{ __html: avatarSvg }} />
                             ) : (
-                                <span>Loading...</span>
+                                <span>🐾</span>
                             )}
                         </div>
                         <div>
@@ -104,11 +148,10 @@ export default function Dashboard() {
                         </ul>
                     </section>
 
-                    {/* Posts feed */}
                     <section className="dashboard__feed">
                         <h3 style={{marginBottom: "12px", color: "var(--primary)"}}>Feed</h3>
                         <div className="grid">
-                            {posts.map((post, i) => (
+                            {posts.length > 0 ? posts.map((post, i) => (
                                 <article key={i} className="post card">
                                     <div style={{display: "flex", alignItems: "center", gap: "12px", padding: "16px"}}>
                                         <div className="avatar avatar--animal" style={{width: 48, height: 48}}>
@@ -134,7 +177,6 @@ export default function Dashboard() {
                                             />
                                         }
                                     </div>
-                                    {/* Actions can stay unchanged */}
                                     <div className="post__actions" style={{
                                         display: "flex",
                                         gap: "18px",
@@ -163,9 +205,10 @@ export default function Dashboard() {
                                                                         ? { ...p, likeCount: p.likeCount + 1 }
                                                                         : p
                                                                 )
-                                                            );
+                                                            )
                                                         }
-                                                    });
+                                                    })
+                                                    .catch(err => console.error("Error liking post:", err))
                                             }}
                                         >
                                             ❤️ <span style={{fontSize: "0.95em"}}>{post.likeCount}</span>
@@ -192,16 +235,18 @@ export default function Dashboard() {
                                                     headers: { 'Content-Type': 'application/json' },
                                                     credentials: "include",
                                                     body: JSON.stringify({ postId: post.id })
-                                                }).then(() => {
-                                                    // Optionally update UI or show feedback
-                                                });
+                                                }).catch(err => console.error("Error bookmarking post:", err))
                                             }}
                                         >
                                             🔖
                                         </button>
                                     </div>
                                 </article>
-                            ))}
+                            )) : (
+                                <div className="post card">
+                                    <p style={{padding: "16px"}}>No posts found in your feed.</p>
+                                </div>
+                            )}
                         </div>
                     </section>
                 </main>
