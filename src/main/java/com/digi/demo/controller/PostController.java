@@ -1,19 +1,17 @@
 package com.digi.demo.controller;
 
 import com.digi.demo.dto.PostDto;
-import com.digi.demo.entity.FriendRequest;
-import com.digi.demo.entity.Post;
-import com.digi.demo.entity.User;
+import com.digi.demo.entity.*;
 import com.digi.demo.repository.PostLikeRepository;
 import com.digi.demo.repository.UserRepository;
 import com.digi.demo.service.AIValidationService;
+import com.digi.demo.service.CommentService;
 import com.digi.demo.service.FriendRequestService;
 import com.digi.demo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.digi.demo.entity.PostLike;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +28,8 @@ public class PostController {
     private FriendRequestService friendRequestService;
     @Autowired
     private PostLikeRepository postLikeRepository;
+    @Autowired
+    private CommentService commentService;
 
     private final AIValidationService aiValidationService;
     @Autowired
@@ -106,4 +106,34 @@ public class PostController {
         List<Post> posts = postService.getPostByUser(user);
         return ResponseEntity.ok(posts);
     }
+
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<Comment>> getCommentsForPost(@PathVariable Long postId) {
+        Post post = postService.getPostById(postId);
+        if (post == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(commentService.getCommentsByPost(post));
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Comment> addComment(
+            @PathVariable Long postId,
+            @RequestParam String authorUsername,
+            @RequestParam String content) {
+        Post post = postService.getPostById(postId);
+        User author = userRepository.findByUsername(authorUsername).orElseThrow();
+        Comment comment = commentService.addComment(post, author, content);
+        return ResponseEntity.ok(comment);
+    }
+
+    @PostMapping("/comments/{commentId}/like")
+    public ResponseEntity<?> likeComment(@PathVariable Long commentId, @RequestParam String username) {
+        User user = userRepository.findByUsername(username).orElseThrow();
+        try {
+            commentService.likeComment(commentId, user);
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

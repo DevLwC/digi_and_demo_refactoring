@@ -19,6 +19,10 @@ export default function Dashboard() {
     const [authError, setAuthError] = useState(false)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [comments, setComments] = useState({})
+    const [showCommentsFor, setShowCommentsFor] = useState(null)
+    const [newComment, setNewComment] = useState("")
+    const [postingComment, setPostingComment] = useState(false)
 
     useEffect(() => {
         setLoading(true)
@@ -74,6 +78,16 @@ export default function Dashboard() {
                         avatarResults.forEach(a => { avatarMap[a.id] = a.svg })
                         setAvatars(avatarMap)
                         setPosts(postsData)
+                        const commentPromises = postsData.map(post =>
+                            fetch(`${API_BASE_URL}/api/posts/${post.id}/comments`, { credentials: "include" })
+                                .then(res => res.json())
+                                .then(comments => ({ postId: post.id, comments }))
+                                .catch(() => ({ postId: post.id, comments: [] }))
+                        );
+                        const commentResults = await Promise.all(commentPromises);
+                        const commentMap = {};
+                        commentResults.forEach(c => { commentMap[c.postId] = c.comments });
+                        setComments(commentMap);
                     } catch (err) {
                         console.error("Error processing posts data:", err)
                     }
@@ -184,10 +198,96 @@ export default function Dashboard() {
                                         borderTop: "1px solid var(--primary-light)",
                                         alignItems: "center"
                                     }}>
-                                        <button type="button" title="Comment"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            💬 <span style={{fontSize: "0.95em"}}>0</span>
+                                        <button
+                                            type="button"
+                                            title="Comment"
+                                            style={{background: "none", border: "none", cursor: "pointer"}}
+                                            onClick={() => setShowCommentsFor(post.id)}
+                                        >
+                                            💬 <span style={{fontSize: "0.95em"}}>{comments[post.id]?.length || 0}</span>
                                         </button>
+                                        {showCommentsFor && (
+                                            <div className="modal-overlay" onClick={() => setShowCommentsFor(null)}>
+                                                <div className="modal" onClick={e => e.stopPropagation()}>
+                                                    <h3>Comments</h3>
+                                                    <ul>
+                                                        {comments[showCommentsFor]
+                                                            ?.sort((a, b) => b.likeCount - a.likeCount)
+                                                            .map((comment, idx) => (
+                                                                <li key={idx}>
+                                                                    <div>
+                                                                        <strong>{comment.author.username}</strong>
+                                                                        {" "}
+                                                                        <button
+                                                                            type="button"
+                                                                            title="Like comment"
+                                                                            style={{
+                                                                                background: "none",
+                                                                                border: "none",
+                                                                                cursor: "pointer",
+                                                                                color: "#e0245e",
+                                                                                marginLeft: "8px"
+                                                                            }}
+                                                                            onClick={async () => {
+                                                                                await fetch(`${API_BASE_URL}/api/posts/comments/${comment.id}/like?username=${user.name}`, {
+                                                                                    method: "POST",
+                                                                                    credentials: "include"
+                                                                                });
+                                                                                // Refresh comments for this post
+                                                                                const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, { credentials: "include" });
+                                                                                const updatedComments = await res.json();
+                                                                                setComments(prev => ({ ...prev, [showCommentsFor]: updatedComments }));
+                                                                            }}
+                                                                        >
+                                                                            ❤️
+                                                                        </button>
+                                                                        <span style={{marginLeft: "4px"}}>{comment.likeCount}</span>
+                                                                    </div>
+                                                                    <div>{comment.content}</div>
+                                                                </li>
+                                                            ))
+                                                        }
+                                                    </ul>
+
+                                                    <form
+                                                        style={{marginTop: "16px"}}
+                                                        onSubmit={async e => {
+                                                            e.preventDefault();
+                                                            if (!newComment.trim()) return;
+                                                            setPostingComment(true);
+                                                            await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, {
+                                                                method: "POST",
+                                                                credentials: "include",
+                                                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                                                                body: new URLSearchParams({
+                                                                    authorUsername: user.name,
+                                                                    content: newComment
+                                                                })
+                                                            });
+                                                            // Refresh comments for this post
+                                                            const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, { credentials: "include" });
+                                                            const updatedComments = await res.json();
+                                                            setComments(prev => ({ ...prev, [showCommentsFor]: updatedComments }));
+                                                            setNewComment("");
+                                                            setPostingComment(false);
+                                                        }}
+                                                    >
+                                                        <input
+                                                            type="text"
+                                                            value={newComment}
+                                                            onChange={e => setNewComment(e.target.value)}
+                                                            placeholder="Write a comment..."
+                                                            style={{width: "80%", padding: "8px"}}
+                                                            disabled={postingComment}
+                                                        />
+                                                        <button type="submit" disabled={postingComment || !newComment.trim()} style={{marginLeft: "8px"}}>
+                                                            Post
+                                                        </button>
+                                                    </form>
+                                                    <button onClick={() => setShowCommentsFor(null)} style={{marginTop: "12px"}}>Close</button>
+                                                </div>
+                                            </div>
+                                        )}
                                         <button
                                             type="button"
                                             title="Like"
