@@ -178,8 +178,21 @@ export default function Dashboard() {
                                                 style={{background: "none", border: "none", cursor: "pointer"}}>
                                             👎 <span style={{fontSize: "0.95em"}}>0</span>
                                         </button>
-                                        <button type="button" title="Bookmark"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
+                                        <button
+                                            type="button"
+                                            title="Bookmark"
+                                            style={{background: "none", border: "none", cursor: "pointer"}}
+                                            onClick={() => {
+                                                fetch(`${API_BASE_URL}/api/users/bookmark`, {
+                                                    method: "POST",
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    credentials: "include",
+                                                    body: JSON.stringify({ postId: post.id })
+                                                }).then(() => {
+                                                    // Optionally update UI or show feedback
+                                                });
+                                            }}
+                                        >
                                             🔖
                                         </button>
                                     </div>

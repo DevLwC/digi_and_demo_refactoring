@@ -21,6 +21,7 @@ export default function Profile() {
     const [posts, setPosts] = useState([]);
     const [avatarSvg, setAvatarSvg] = useState(null);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
+    const [bookmarks, setBookmarks] = useState([]);
 
     const handleLocationChange = async (e) => {
         const newLocation = e.target.value;
@@ -110,6 +111,19 @@ export default function Profile() {
                 });
         }
     }, [active, user.name]);
+
+    useEffect(() => {
+        if (active === "bookmarks") {
+            const userId = localStorage.getItem('userId');
+            fetch(`${API_BASE_URL}/api/users/${userId}/bookmarks`, { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => setBookmarks(data))
+                .catch(err => {
+                    setBookmarks([]);
+                    console.error('Error fetching bookmarks:', err)
+                });
+        }
+    }, [active]);
 
     const handleAvatarSelect = async (animal) => {
         const userId = localStorage.getItem('userId');
@@ -294,10 +308,38 @@ export default function Profile() {
                             </div>
                         )}
                         {active === "bookmarks" && (
-                            <div className="empty">
-                                <h3>No bookmarks yet</h3>
-                                <p>Save posts to find them here later.</p>
-                                <button className="btn btn--ghost" type="button">Explore</button>
+                            <div className="grid">
+                                {bookmarks.length === 0 ? (
+                                    <div className="empty">
+                                        <h3>No bookmarks yet</h3>
+                                        <p>Save posts to find them here later.</p>
+                                        <button className="btn btn--ghost" type="button">Explore</button>
+                                    </div>
+                                ) : (
+                                    bookmarks.map((post) => (
+                                        <article key={post.id} className="post card">
+                                            {post.imageData && (
+                                                <img
+                                                    src={`data:image/png;base64,${post.imageData}`}
+                                                    alt="Post"
+                                                    className="post__media"
+                                                    style={{
+                                                        maxWidth: "100%",
+                                                        borderRadius: "12px",
+                                                        marginBottom: "8px"
+                                                }}
+                                                />
+                                            )}
+                                            <div className="post__body">
+                                                <div><strong>{post.author.username}</strong></div>
+                                                <div>{post.content}</div>
+                                                <div style={{fontSize: "0.8em", color: "#888"}}>
+                                                    {post.createdAt}
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))
+                                )}
                             </div>
                         )}
                         {active === "replies" && (

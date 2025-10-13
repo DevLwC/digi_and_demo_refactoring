@@ -4,6 +4,8 @@ import com.digi.demo.entity.AvatarImage;
 import com.digi.demo.entity.User;
 import com.digi.demo.repository.AvatarImageRepository;
 import com.digi.demo.repository.UserRepository;
+import com.digi.demo.entity.Post;
+import com.digi.demo.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,8 @@ public class UserController {
     private UserRepository userRepository;
     @Autowired
     private AvatarImageRepository avatarImageRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping("/search")
     public List<User> searchUsers(@RequestParam String username) {
@@ -104,6 +108,49 @@ public class UserController {
         user.setAvatarImage(avatar);
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "Avatar updated successfully"));
+    }
+
+    @PostMapping("/bookmark")
+    public ResponseEntity<?> bookmarkPost(@RequestBody Map<String, Long> body, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String username = authentication.getName();
+        Long postId = body.get("postId");
+        User user = userRepository.findByUsername(username).orElse(null);
+        Post post = postRepository.findById(postId).orElse(null);
+        if (user == null || post == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User or post not found"));
+        }
+        user.getBookmarkedPosts().add(post);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("message", "Post bookmarked"));
+    }
+
+    @PostMapping("/unbookmark")
+    public ResponseEntity<?> unbookmarkPost(@RequestBody Map<String, Long> body, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String username = authentication.getName();
+        Long postId = body.get("postId");
+        User user = userRepository.findByUsername(username).orElse(null);
+        Post post = postRepository.findById(postId).orElse(null);
+        if (user == null || post == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User or post not found"));
+        }
+        user.getBookmarkedPosts().remove(post);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("message", "Post unbookmarked"));
+    }
+
+    @GetMapping("/{id}/bookmarks")
+    public ResponseEntity<?> getBookmarkedPosts(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+        return ResponseEntity.ok(user.getBookmarkedPosts());
     }
 
 }

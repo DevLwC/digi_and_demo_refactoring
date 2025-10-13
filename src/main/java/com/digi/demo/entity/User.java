@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -43,6 +45,14 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_image_id")
     private AvatarImage avatarImage;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_bookmarks",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Set<Post> bookmarkedPosts = new HashSet<>();
 
     // Constructors
     public User() {
@@ -97,6 +107,9 @@ public class User {
 
     public AvatarImage getAvatarImage() { return avatarImage; }
     public void setAvatarImage(AvatarImage avatarImage) { this.avatarImage = avatarImage; }
+
+    public Set<Post> getBookmarkedPosts() { return bookmarkedPosts; }
+    public void setBookmarkedPosts(Set<Post> bookmarkedPosts) { this.bookmarkedPosts = bookmarkedPosts; }
 }
 
 
