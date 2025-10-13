@@ -63,32 +63,27 @@ public class SecurityConfig {
         http.cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // API routes that don't require authentication
                         .requestMatchers(
-                                "/",
-                                "/login",
-                                "/register",
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/css/**",
-                                "/js/**",
-                                "/h2-console/**",
-                                "/api/friends/**"
+                                "/api/friends/**",
+                                "/h2-console/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
+                        // Allow OPTIONS requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Protect all other API endpoints
                         .requestMatchers("/api/**").authenticated()
+                        // Allow all other requests (frontend routes)
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form.disable())
-                /*.formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .permitAll()
-                )*/
                 .logout(logout -> logout.permitAll())
-                .headers(headers -> headers.frameOptions().disable());
+                .headers(headers -> headers.frameOptions(frameOpt -> frameOpt.disable()));
 
         return http.userDetailsService(userDetailsService).build();
     }
+
 
 
     @Bean
