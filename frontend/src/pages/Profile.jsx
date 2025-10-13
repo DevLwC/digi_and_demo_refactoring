@@ -115,7 +115,7 @@ export default function Profile() {
     useEffect(() => {
         if (active === "bookmarks") {
             const userId = localStorage.getItem('userId');
-            fetch(`${API_BASE_URL}/api/users/${userId}/bookmarks`, { credentials: 'include' })
+            fetch(`${API_BASE_URL}/api/users/${userId}/bookmarks`, {credentials: 'include'})
                 .then(res => res.json())
                 .then(data => setBookmarks(data))
                 .catch(err => {
@@ -129,12 +129,12 @@ export default function Profile() {
         const userId = localStorage.getItem('userId');
         await fetch(`${API_BASE_URL}/api/users/updateAvatar`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ avatarAnimal: animal }),
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({avatarAnimal: animal}),
             credentials: 'include'
         });
         // Fetch and update avatar SVG
-        fetch(`${API_BASE_URL}/api/users/${userId}/avatar`, { credentials: 'include' })
+        fetch(`${API_BASE_URL}/api/users/${userId}/avatar`, {credentials: 'include'})
             .then(res => res.text())
             .then(svg => setAvatarSvg(svg))
             .catch(() => setAvatarSvg(null));
@@ -144,216 +144,178 @@ export default function Profile() {
     return (
         <div className="profile-bg">
             <div className="profile-center-container">
-                <main className="profile" role="main">
-                    {/* Header card */}
-                    <section className="card card--header" aria-label="Profile header">
+                <main className={`profile ${showAvatarModal ? 'modal-active' : ''}`} role="main">
+                    <section className="card card--header">
                         <div className="header__row">
                             <div className="header__left">
-                                {/* Animal avatar */}
-                                <div
-                                    className="avatar avatar--animal"
-                                    aria-hidden="true"
-                                    style={{cursor: "pointer"}}
-                                    onClick={() => setShowAvatarModal(true)}
-                                >
+                                <div className="avatar avatar--animal" onClick={() => setShowAvatarModal(true)}
+                                     style={{cursor: 'pointer'}}>
                                     {avatarSvg ? (
                                         <span dangerouslySetInnerHTML={{__html: avatarSvg}}/>
                                     ) : (
                                         <span>Loading...</span>
                                     )}
                                 </div>
-
-                                {showAvatarModal && (
-                                    <AvatarModal
-                                        onSelect={handleAvatarSelect}
-                                        onClose={() => setShowAvatarModal(false)}
-                                    />
-                                )}
-                                <div className="identity">
+                                <div>
                                     <h1 className="identity__name">{user.name}</h1>
                                     <div className="identity__meta">
-                                        <span className="handle">{user.handle}</span>
-                                        <span
-                                            className="badge"
-                                            aria-label={`Status: ${user.status.label}`}
-                                        >
-                                                                        <span className="badge__icon" role="img"
-                                                                              aria-hidden="true">
-                                                                            {user.status.icon}
-                                                                        </span>
-                                            {user.status.label}
-                                                                    </span>
+                                        <span className="handle">@{user.handle}</span>
+                                        <span className="badge">
+                                            <span className="badge__icon">🌱</span>
+                                            Eco-champion
+                                        </span>
+                                    </div>
+                                    <div className="stats">
+                                        <div>
+                                            <div className="stat__value">{user.following}</div>
+                                            <div className="stat__label">Following</div>
+                                        </div>
+                                        <div>
+                                            <div className="stat__value">{user.followers}</div>
+                                            <div className="stat__label">Followers</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="header__actions">
-                                <button className="btn btn--ghost" type="button">Share</button>
-                                <button className="btn btn--primary" type="button">Follow</button>
+                                <button className="btn btn--ghost">Edit profile</button>
+                                <button className="btn btn--primary">Message</button>
                             </div>
                         </div>
-                        <div>
-                            <textarea
-                                className="bio"
-                                value={bio}
-                                onChange={handleBioChange}
-                                rows={3}
-                                style={{width: "100%"}}
-                            />
-                        </div>
-                        <ul className="facts" aria-label="Profile details">
+                        <textarea
+                            className="bio"
+                            value={bio}
+                            onChange={handleBioChange}
+                            placeholder="Tell us about yourself..."
+                            style={{
+                                width: '100%',
+                                minHeight: '60px',
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                fontFamily: 'inherit',
+                                lineHeight: '1.4',
+                                boxSizing: 'border-box'
+                            }}
+                        />
+                        <ul className="facts">
                             <li>
-                                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                                    <path
-                                        d="M12 2C8 2 4.6 4.8 4.1 8.7c-.5 3.7 1.6 6.2 3.4 8.1L12 21l4.5-4.2c1.8-1.9 3.9-4.4 3.4-8.1C19.4 4.8 16 2 12 2Z"
-                                        stroke="currentColor"
-                                        fill="none"
-                                        strokeWidth="1.6"
-                                    />
-                                </svg>
+                                <span role="img" aria-label="Calendar">📅</span>
+                                Joined {user.joined}
+                            </li>
+                            <li>
+                                <span role="img" aria-label="Location">📍</span>
                                 <input
                                     type="text"
                                     value={location}
                                     onChange={handleLocationChange}
+                                    placeholder="Add your location"
                                     className="location-input"
+                                    style={{
+                                        border: 'none',
+                                        background: 'transparent',
+                                        color: 'inherit',
+                                        fontSize: 'inherit',
+                                        fontFamily: 'inherit',
+                                        outline: 'none',
+                                        width: '200px'
+                                    }}
                                 />
                             </li>
-                            <li>
-                                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                                    <path
-                                        d="M4 12a8 8 0 0 1 16 0c0 4.4-3.6 8-8 8-1.7 0-3.3-.5-4.6-1.4L4 21l1.4-3.4A7.9 7.9 0 0 1 4 12Z"
-                                        stroke="currentColor"
-                                        fill="none"
-                                        strokeWidth="1.6"
-                                    />
-                                </svg>
-                                <a href={user.link} target="_blank" rel="noreferrer">
-                                    {user.link.replace(/^https?:\/\//, "")}
-                                </a>
-                            </li>
-                            <li>
-                                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                                    <path
-                                        d="M8 7V3m8 4V3M4 11h16M6 5h0m12 14H6a2 2 0 0 1-2-2V7h16v10a2 2 0 0 1-2 2Z"
-                                        stroke="currentColor"
-                                        fill="none"
-                                        strokeWidth="1.6"
-                                    />
-                                </svg>
-                                {user.joined}
-                            </li>
                         </ul>
-                        <div className="stats" role="group" aria-label="Follow stats">
-                            <div className="stat">
-                                <div className="stat__value">{user.followers}</div>
-                                <div className="stat__label">Followers</div>
-                            </div>
-                            <div className="stat">
-                                <div className="stat__value">{user.following}</div>
-                                <div className="stat__label">Following</div>
-                            </div>
-                        </div>
                         <nav className="tabs" aria-label="Profile sections">
-                            {tabs.map((t) => (
+                            {tabs.map(tab => (
                                 <button
-                                    key={t.key}
-                                    className={`tab ${active === t.key ? "is-active" : ""}`}
-                                    aria-current={active === t.key ? "page" : undefined}
-                                    onClick={() => setActive(t.key)}
+                                    key={tab.key}
+                                    className={`tab${active === tab.key ? " is-active" : ""}`}
+                                    aria-current={active === tab.key ? "page" : undefined}
+                                    onClick={() => setActive(tab.key)}
                                     type="button"
                                 >
-                                    {t.label}
+                                    {tab.label}
                                 </button>
                             ))}
+                            <button
+                                onClick={handleLogout}
+                                className="btn btn--logout"
+                                style={{marginLeft: 'auto'}}
+                            >
+                                Logout
+                            </button>
                         </nav>
-                        <button className="btn btn--ghost" type="button" onClick={handleLogout}>Log out</button>
                     </section>
-                    {/* Content area */}
+
                     <section className="content">
                         {active === "posts" && (
                             <div className="grid">
-                                {posts.length === 0 ? (
-                                    // Skeletons or empty state
-                                    [1, 2, 3, 4, 5, 6].map((i) => (
-                                        <article key={i} className="post card">
-                                            <div className="post__media skeleton"/>
+                                {posts.length > 0 ? (
+                                    posts.map((post, i) => (
+                                        <article key={i} className="card post">
+                                            {post.imageData && (
+                                                <img
+                                                    className="post__media"
+                                                    src={`data:image/png;base64,${post.imageData}`}
+                                                    alt="Post"
+                                                    style={{width: "100%", height: "150px", objectFit: "cover"}}
+                                                />
+                                            )}
                                             <div className="post__body">
-                                                <div className="skeleton skeleton--line"/>
-                                                <div className="skeleton skeleton--line w-70"/>
+                                                <p>{post.content}</p>
                                             </div>
                                         </article>
                                     ))
                                 ) : (
-                                    posts.map((post) => (
-                                        <article key={post.id} className="post card">
-                                            {post.imageData && (
-                                                <img
-                                                    src={`data:image/png;base64,${post.imageData}`}
-                                                    alt="Post"
-                                                    className="post__media"
-                                                    style={{
-                                                        maxWidth: "100%",
-                                                        borderRadius: "12px",
-                                                        marginBottom: "8px"
-                                                    }}
-                                                />
-                                            )}
-                                            <div className="post__body">
-                                                <div><strong>{post.author.username}</strong></div>
-                                                <div>{post.content}</div>
-                                                <div style={{fontSize: "0.8em", color: "#888"}}>{post.createdAt}</div>
-                                            </div>
-                                        </article>
-                                    ))
+                                    <div className="empty">
+                                        <p>No posts yet. Share something with the world!</p>
+                                    </div>
                                 )}
                             </div>
                         )}
                         {active === "bookmarks" && (
                             <div className="grid">
-                                {bookmarks.length === 0 ? (
-                                    <div className="empty">
-                                        <h3>No bookmarks yet</h3>
-                                        <p>Save posts to find them here later.</p>
-                                        <button className="btn btn--ghost" type="button">Explore</button>
-                                    </div>
-                                ) : (
-                                    bookmarks.map((post) => (
-                                        <article key={post.id} className="post card">
-                                            {post.imageData && (
+                                {bookmarks.length > 0 ? (
+                                    bookmarks.map((bookmark, i) => (
+                                        <article key={i} className="card post">
+                                            {bookmark.imageData && (
                                                 <img
-                                                    src={`data:image/png;base64,${post.imageData}`}
-                                                    alt="Post"
                                                     className="post__media"
-                                                    style={{
-                                                        maxWidth: "100%",
-                                                        borderRadius: "12px",
-                                                        marginBottom: "8px"
-                                                }}
+                                                    src={`data:image/png;base64,${bookmark.imageData}`}
+                                                    alt="Post"
+                                                    style={{width: "100%", height: "150px", objectFit: "cover"}}
                                                 />
                                             )}
                                             <div className="post__body">
-                                                <div><strong>{post.author.username}</strong></div>
-                                                <div>{post.content}</div>
-                                                <div style={{fontSize: "0.8em", color: "#888"}}>
-                                                    {post.createdAt}
-                                                </div>
+                                                <p>{bookmark.content}</p>
                                             </div>
                                         </article>
                                     ))
+                                ) : (
+                                    <div className="empty">
+                                        <p>No bookmarks yet. Start saving posts you love!</p>
+                                    </div>
                                 )}
                             </div>
                         )}
                         {active === "replies" && (
-                            <div className="list">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="card list__item">
-                                        <div className="skeleton skeleton--line"/>
-                                        <div className="skeleton skeleton--line w-80"/>
-                                    </div>
-                                ))}
+                            <div className="empty">
+                                <p>No replies yet. Join the conversation!</p>
                             </div>
                         )}
                     </section>
                 </main>
+
+                {showAvatarModal && (
+                    <div className="modal-overlay" onClick={() => setShowAvatarModal(false)}>
+                        <AvatarModal
+                            currentAvatar={avatarSvg}
+                            onAvatarChange={(newAvatar) => {
+                                setAvatarSvg(newAvatar);
+                                setShowAvatarModal(false);
+                            }}
+                            onClose={() => setShowAvatarModal(false)}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

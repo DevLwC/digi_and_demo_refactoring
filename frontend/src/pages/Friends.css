@@ -13,16 +13,9 @@
 }
 
 .friends-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background: var(--bg-gradient);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 0;
 }
 
 .friends-center-container {
@@ -40,10 +33,11 @@
     width: 100%;
     max-width: 700px;
     margin: 0 auto;
-    padding: 8px 16px 96px;
+    padding: 16px 16px 96px;
     background: var(--bg-gradient);
     color: var(--text);
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    min-height: 100vh;
 }
 
 .card {
@@ -55,12 +49,16 @@
 }
 
 .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--card);
+    border-bottom: 1.5px solid var(--primary-light);
+    padding: 12px 0;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px var(--ring);
     display: flex;
     gap: 8px;
-    margin: 0 0 16px 0;
-    padding-top: 24px;
-    border-top: 1.5px solid var(--primary-light);
-    background: transparent;
 }
 
 .tab {
