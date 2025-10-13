@@ -118,7 +118,6 @@ public class SecurityConfig {
             servletContext.getSessionCookieConfig().setName("JSESSIONID");
             servletContext.getSessionCookieConfig().setPath("/");
             servletContext.getSessionCookieConfig().setDomain("digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
-            servletContext.getSessionCookieConfig().setComment("SameSite=None");
         };
     }
 
