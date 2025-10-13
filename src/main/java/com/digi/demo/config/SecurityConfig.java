@@ -99,6 +99,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("https://localhost:5173");
+        config.addAllowedOrigin("https://digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
