@@ -110,4 +110,16 @@ public class SecurityConfig {
         return source;
     }
 
+    @Bean
+    public ServletContextInitializer servletContextInitializer() {
+        return servletContext -> {
+            servletContext.getSessionCookieConfig().setSecure(true);
+            servletContext.getSessionCookieConfig().setHttpOnly(true);
+            servletContext.getSessionCookieConfig().setName("JSESSIONID");
+            servletContext.getSessionCookieConfig().setPath("/");
+            servletContext.getSessionCookieConfig().setDomain("digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
+            servletContext.getSessionCookieConfig().setComment("SameSite=None");
+        };
+    }
+
 }
