@@ -170,14 +170,6 @@ export default function Dashboard() {
                                                 style={{background: "none", border: "none", cursor: "pointer"}}>
                                             🔁
                                         </button>
-                                        <button type="button" title="Upvote"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            👍 <span style={{fontSize: "0.95em"}}>0</span>
-                                        </button>
-                                        <button type="button" title="Downvote"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            👎 <span style={{fontSize: "0.95em"}}>0</span>
-                                        </button>
                                         <button
                                             type="button"
                                             title="Bookmark"

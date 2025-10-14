@@ -137,6 +137,7 @@
     line-height: 1;
 }
 
+/* Modal styling */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -148,6 +149,136 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--primary-light);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.modal-close:hover {
+    background: var(--accent);
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Changed from 4 to 2 */
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.avatar-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.avatar-option:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--ring);
+}
+
+.avatar-option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.avatar-option-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+.avatar-option-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: capitalize;
+}
+
+.current-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--accent);
+    border-radius: 12px;
+}
+
+.current-avatar-display {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.current-avatar-display span,
+.current-avatar-display svg {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    display: block;
+}
+
+.current-avatar-label {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid var(--primary-light);
 }
 
 .profile.modal-active .content {
@@ -419,6 +550,31 @@ button:focus-visible, a:focus-visible {
     outline: 2px solid var(--primary);
     box-shadow: 0 0 0 4px var(--ring);
     border-radius: 8px;
+}
+
+/* Responsive design for modal */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        padding: 24px 16px;
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(2, 1fr); /* Keep 2 columns on mobile too */
+        gap: 12px;
+    }
+
+    .avatar-option {
+        padding: 12px;
+    }
+
+    .avatar-option-icon {
+        font-size: 2rem;
+    }
+
+    .modal-title {
+        font-size: 1.3rem;
+    }
 }
 
 /* Optional dark mode */
