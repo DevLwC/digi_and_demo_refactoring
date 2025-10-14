@@ -1,10 +1,8 @@
-// src/main/java/com/digi/demo/entity/CommunityNote.java
 package com.digi.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-// src/main/java/com/digi/demo/entity/CommunityNote.java
 @Entity
 @Table(name = "community_notes")
 public class CommunityNote {
@@ -37,9 +35,7 @@ public class CommunityNote {
         return total == 0 ? 0 : (double) helpfulVotes / total;
     }
 
-    // Existing getters and setters...
 
-        // Simple getters and setters like your Post entity
         public Long getId() { return id; }
         public void setId(Long id) { this.id = id; }
 

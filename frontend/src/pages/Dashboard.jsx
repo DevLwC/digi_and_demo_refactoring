@@ -3,6 +3,7 @@ import "./Dashboard.css"
 import "./Profile.css"
 import {getCurrentUser} from "../api/auth.js"
 import {API_BASE_URL} from "../config.js"
+import PostActions from "../components/PostActions.jsx";
 
 const activity = [
     {icon: "🌱", text: "You earned a new badge: Seedling"},
@@ -191,156 +192,20 @@ export default function Dashboard() {
                                             />
                                         }
                                     </div>
-                                    <div className="post__actions" style={{
-                                        display: "flex",
-                                        gap: "18px",
-                                        padding: "12px 16px 10px 16px",
-                                        borderTop: "1px solid var(--primary-light)",
-                                        alignItems: "center"
-                                    }}>
-                                        <button
-                                            type="button"
-                                            title="Comment"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => setShowCommentsFor(post.id)}
-                                        >
-                                            💬 <span style={{fontSize: "0.95em"}}>{comments[post.id]?.length || 0}</span>
-                                        </button>
-                                        {showCommentsFor && (
-                                            <div className="modal-overlay" onClick={() => setShowCommentsFor(null)}>
-                                                <div className="modal" onClick={e => e.stopPropagation()}>
-                                                    <h3>Comments</h3>
-                                                    <ul>
-                                                        {comments[showCommentsFor]
-                                                            ?.sort((a, b) => b.likeCount - a.likeCount)
-                                                            .map((comment, idx) => (
-                                                                <li key={idx}>
-                                                                    <div>
-                                                                        <strong>{comment.author.username}</strong>
-                                                                        {" "}
-                                                                        <button
-                                                                            type="button"
-                                                                            title="Like comment"
-                                                                            style={{
-                                                                                background: "none",
-                                                                                border: "none",
-                                                                                cursor: "pointer",
-                                                                                color: "#e0245e",
-                                                                                marginLeft: "8px"
-                                                                            }}
-                                                                            onClick={async () => {
-                                                                                await fetch(`${API_BASE_URL}/api/posts/comments/${comment.id}/like?username=${user.name}`, {
-                                                                                    method: "POST",
-                                                                                    credentials: "include"
-                                                                                });
-                                                                                // Refresh comments for this post
-                                                                                const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, { credentials: "include" });
-                                                                                const updatedComments = await res.json();
-                                                                                setComments(prev => ({ ...prev, [showCommentsFor]: updatedComments }));
-                                                                            }}
-                                                                        >
-                                                                            ❤️
-                                                                        </button>
-                                                                        <span style={{marginLeft: "4px"}}>{comment.likeCount}</span>
-                                                                    </div>
-                                                                    <div>{comment.content}</div>
-                                                                </li>
-                                                            ))
-                                                        }
-                                                    </ul>
-
-                                                    <form
-                                                        style={{marginTop: "16px"}}
-                                                        onSubmit={async e => {
-                                                            e.preventDefault();
-                                                            if (!newComment.trim()) return;
-                                                            setPostingComment(true);
-                                                            await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, {
-                                                                method: "POST",
-                                                                credentials: "include",
-                                                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                                                                body: new URLSearchParams({
-                                                                    authorUsername: user.name,
-                                                                    content: newComment
-                                                                })
-                                                            });
-                                                            // Refresh comments for this post
-                                                            const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, { credentials: "include" });
-                                                            const updatedComments = await res.json();
-                                                            setComments(prev => ({ ...prev, [showCommentsFor]: updatedComments }));
-                                                            setNewComment("");
-                                                            setPostingComment(false);
-                                                        }}
-                                                    >
-                                                        <input
-                                                            type="text"
-                                                            value={newComment}
-                                                            onChange={e => setNewComment(e.target.value)}
-                                                            placeholder="Write a comment..."
-                                                            style={{width: "80%", padding: "8px"}}
-                                                            disabled={postingComment}
-                                                        />
-                                                        <button type="submit" disabled={postingComment || !newComment.trim()} style={{marginLeft: "8px"}}>
-                                                            Post
-                                                        </button>
-                                                    </form>
-                                                    <button onClick={() => setShowCommentsFor(null)} style={{marginTop: "12px"}}>Close</button>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <button
-                                            type="button"
-                                            title="Like"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => {
-                                                fetch(`${API_BASE_URL}/api/posts/${post.id}/like?username=${user.name}`, {
-                                                    method: "POST",
-                                                    credentials: "include"
-                                                })
-                                                    .then(res => {
-                                                        if (res.ok) {
-                                                            setPosts(prevPosts =>
-                                                                prevPosts.map(p =>
-                                                                    p.id === post.id
-                                                                        ? { ...p, likeCount: p.likeCount + 1 }
-                                                                        : p
-                                                                )
-                                                            )
-                                                        }
-                                                    })
-                                                    .catch(err => console.error("Error liking post:", err))
-                                            }}
-                                        >
-                                            ❤️ <span style={{fontSize: "0.95em"}}>{post.likeCount}</span>
-                                        </button>
-                                        <button type="button" title="Share"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            🔁
-                                        </button>
-                                        <button type="button" title="Upvote"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            👍 <span style={{fontSize: "0.95em"}}>0</span>
-                                        </button>
-                                        <button type="button" title="Downvote"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            👎 <span style={{fontSize: "0.95em"}}>0</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            title="Bookmark"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => {
-                                                fetch(`${API_BASE_URL}/api/users/bookmark`, {
-                                                    method: "POST",
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    credentials: "include",
-                                                    body: JSON.stringify({ postId: post.id })
-                                                }).catch(err => console.error("Error bookmarking post:", err))
-                                            }}
-                                        >
-                                            🔖
-                                        </button>
-                                    </div>
+                                    <PostActions
+                                        post={post}
+                                        user={user}
+                                        comments={comments}
+                                        setComments={setComments}
+                                        showCommentsFor={showCommentsFor}
+                                        setShowCommentsFor={setShowCommentsFor}
+                                        avatars={avatars}
+                                        newComment={newComment}
+                                        setNewComment={setNewComment}
+                                        postingComment={postingComment}
+                                        setPostingComment={setPostingComment}
+                                        setPosts={setPosts}
+                                        />
                                 </article>
                             )) : (
                                 <div className="post card">
