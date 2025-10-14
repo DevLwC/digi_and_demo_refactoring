@@ -14,4 +14,5 @@ public interface CommunityNoteRepository extends JpaRepository<CommunityNote, Lo
     List<CommunityNote> findByPostAndStatus(Post post, NoteStatus status);
     List<CommunityNote> findByStatus(NoteStatus status);
     boolean existsByPostAndAuthor(Post post, User author);
+    List<CommunityNote> findByPost(Post post);
 }

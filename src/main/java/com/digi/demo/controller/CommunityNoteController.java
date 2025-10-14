@@ -5,6 +5,7 @@ import com.digi.demo.entity.CommunityNote;
 import com.digi.demo.entity.NoteStatus;
 import com.digi.demo.entity.Post;
 import com.digi.demo.entity.User;
+import com.digi.demo.repository.CommunityNoteRepository;
 import com.digi.demo.service.AIValidationService;
 import com.digi.demo.service.CommunityNoteService;
 import com.digi.demo.service.PostService;
@@ -24,8 +25,10 @@ public class CommunityNoteController {
     private PostService postService;
     @Autowired
     private UserService userService;
-
+    @Autowired
     private AIValidationService aiValidationService;
+    @Autowired
+    private CommunityNoteRepository noteRepository;
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<CommunityNote>> getNotesByPost(@PathVariable Long postId) {
@@ -80,4 +83,14 @@ public class CommunityNoteController {
     public ResponseEntity<List<CommunityNote>> getPendingNotes() {
         return ResponseEntity.ok(noteService.getPendingNotes());
     }
+
+    @GetMapping("/post/{postId}/all")
+    public ResponseEntity<List<CommunityNote>> getAllNotesByPost(@PathVariable Long postId) {
+        Post post = postService.getPostById(postId);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(noteRepository.findByPost(post));
+    }
+
 }

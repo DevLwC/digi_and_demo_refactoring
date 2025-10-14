@@ -3,6 +3,7 @@ import "./Dashboard.css"
 import "./Profile.css"
 import {getCurrentUser} from "../api/auth.js"
 import {API_BASE_URL} from "../config.js"
+import PostActions from "../components/PostActions.jsx";
 
 const activity = [
     {icon: "🌱", text: "You earned a new badge: Seedling"},
@@ -63,34 +64,30 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (user && user.name) {
-            fetch(`${API_BASE_URL}/api/posts/feed?username=${user.name}`, {credentials: "include"})
+            fetch(`${API_BASE_URL}/api/posts/feed?username=${user.name}`, { credentials: "include" })
                 .then(res => res.json())
                 .then(async postsData => {
                     try {
                         const avatarPromises = postsData.map(post =>
-                            fetch(`${API_BASE_URL}/api/users/${post.author.id}/avatar`, {credentials: "include"})
+                            fetch(`${API_BASE_URL}/api/users/${post.author.id}/avatar`, { credentials: "include" })
                                 .then(res => res.text())
-                                .then(svg => ({id: post.author.id, svg}))
-                                .catch(() => ({id: post.author.id, svg: null}))
+                                .then(svg => ({ id: post.author.id, svg }))
+                                .catch(() => ({ id: post.author.id, svg: null }))
                         )
                         const avatarResults = await Promise.all(avatarPromises)
                         const avatarMap = {}
-                        avatarResults.forEach(a => {
-                            avatarMap[a.id] = a.svg
-                        })
+                        avatarResults.forEach(a => { avatarMap[a.id] = a.svg })
                         setAvatars(avatarMap)
                         setPosts(postsData)
                         const commentPromises = postsData.map(post =>
-                            fetch(`${API_BASE_URL}/api/posts/${post.id}/comments`, {credentials: "include"})
+                            fetch(`${API_BASE_URL}/api/posts/${post.id}/comments`, { credentials: "include" })
                                 .then(res => res.json())
-                                .then(comments => ({postId: post.id, comments}))
-                                .catch(() => ({postId: post.id, comments: []}))
+                                .then(comments => ({ postId: post.id, comments }))
+                                .catch(() => ({ postId: post.id, comments: [] }))
                         );
                         const commentResults = await Promise.all(commentPromises);
                         const commentMap = {};
-                        commentResults.forEach(c => {
-                            commentMap[c.postId] = c.comments
-                        });
+                        commentResults.forEach(c => { commentMap[c.postId] = c.comments });
                         setComments(commentMap);
                     } catch (err) {
                         console.error("Error processing posts data:", err)
@@ -140,7 +137,7 @@ export default function Dashboard() {
                     <section className="card dashboard__welcome">
                         <div className="dashboard__avatar avatar avatar--animal">
                             {avatarSvg ? (
-                                <span dangerouslySetInnerHTML={{__html: avatarSvg}}/>
+                                <span dangerouslySetInnerHTML={{ __html: avatarSvg }} />
                             ) : (
                                 <span>🐾</span>
                             )}
@@ -174,15 +171,12 @@ export default function Dashboard() {
                                     <div style={{display: "flex", alignItems: "center", gap: "12px", padding: "16px"}}>
                                         <div className="avatar avatar--animal" style={{width: 48, height: 48}}>
                                             {avatars[post.author.id] ?
-                                                <span dangerouslySetInnerHTML={{__html: avatars[post.author.id]}}/> :
+                                                <span dangerouslySetInnerHTML={{ __html: avatars[post.author.id] }} /> :
                                                 <span>🐾</span>
                                             }
                                         </div>
                                         <div>
-                                            <div style={{
-                                                fontWeight: 600,
-                                                color: "var(--text)"
-                                            }}>{post.author.username}</div>
+                                            <div style={{fontWeight: 600, color: "var(--text)"}}>{post.author.username}</div>
                                             <div style={{fontSize: "0.95rem", color: "var(--muted)"}}>
                                                 {new Date(post.createdAt).toLocaleString()}
                                             </div>
@@ -198,66 +192,20 @@ export default function Dashboard() {
                                             />
                                         }
                                     </div>
-                                    <div className="post__actions" style={{
-                                        display: "flex",
-                                        gap: "18px",
-                                        padding: "12px 16px 10px 16px",
-                                        borderTop: "1px solid var(--primary-light)",
-                                        alignItems: "center"
-                                    }}>
-                                        <button
-                                            type="button"
-                                            title="Comment"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => setShowCommentsFor(post.id)}
-                                        >
-                                            💬 <span style={{fontSize: "0.95em"}}>{comments[post.id]?.length || 0}</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            title="Like"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => {
-                                                fetch(`${API_BASE_URL}/api/posts/${post.id}/like?username=${user.name}`, {
-                                                    method: "POST",
-                                                    credentials: "include"
-                                                })
-                                                    .then(res => {
-                                                        if (res.ok) {
-                                                            setPosts(prevPosts =>
-                                                                prevPosts.map(p =>
-                                                                    p.id === post.id
-                                                                        ? {...p, likeCount: p.likeCount + 1}
-                                                                        : p
-                                                                )
-                                                            )
-                                                        }
-                                                    })
-                                                    .catch(err => console.error("Error liking post:", err))
-                                            }}
-                                        >
-                                            ❤️ <span style={{fontSize: "0.95em"}}>{post.likeCount}</span>
-                                        </button>
-                                        <button type="button" title="Share"
-                                                style={{background: "none", border: "none", cursor: "pointer"}}>
-                                            🔁
-                                        </button>
-                                        <button
-                                            type="button"
-                                            title="Bookmark"
-                                            style={{background: "none", border: "none", cursor: "pointer"}}
-                                            onClick={() => {
-                                                fetch(`${API_BASE_URL}/api/users/bookmark`, {
-                                                    method: "POST",
-                                                    headers: {'Content-Type': 'application/json'},
-                                                    credentials: "include",
-                                                    body: JSON.stringify({postId: post.id})
-                                                }).catch(err => console.error("Error bookmarking post:", err))
-                                            }}
-                                        >
-                                            🔖
-                                        </button>
-                                    </div>
+                                    <PostActions
+                                        post={post}
+                                        user={user}
+                                        comments={comments}
+                                        setComments={setComments}
+                                        showCommentsFor={showCommentsFor}
+                                        setShowCommentsFor={setShowCommentsFor}
+                                        avatars={avatars}
+                                        newComment={newComment}
+                                        setNewComment={setNewComment}
+                                        postingComment={postingComment}
+                                        setPostingComment={setPostingComment}
+                                        setPosts={setPosts}
+                                        />
                                 </article>
                             )) : (
                                 <div className="post card">
@@ -267,111 +215,6 @@ export default function Dashboard() {
                         </div>
                     </section>
                 </main>
-
-                {showCommentsFor && (
-                    <div className="modal-overlay" onClick={() => setShowCommentsFor(null)}>
-                        <div className="modal" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h3>Comments</h3>
-                                <button
-                                    className="modal-close"
-                                    onClick={() => setShowCommentsFor(null)}
-                                    aria-label="Close comments"
-                                >
-                                    ×
-                                </button>
-                            </div>
-
-                            <div className="modal-body">
-                                {comments[showCommentsFor]?.length > 0 ? (
-                                    <ul className="comments-list">
-                                        {comments[showCommentsFor]
-                                            ?.sort((a, b) => b.likeCount - a.likeCount)
-                                            .map((comment, idx) => (
-                                                <li key={idx} className="comment-item">
-                                                    <div className="comment-header">
-                                                            <span className="comment-author">
-                                                                {comment.author.username}
-                                                            </span>
-                                                        <div className="comment-actions">
-                                                            <button
-                                                                type="button"
-                                                                className="comment-like-btn"
-                                                                title="Like comment"
-                                                                onClick={async () => {
-                                                                    await fetch(`${API_BASE_URL}/api/posts/comments/${comment.id}/like?username=${user.name}`, {
-                                                                        method: "POST",
-                                                                        credentials: "include"
-                                                                    });
-                                                                    // Refresh comments for this post
-                                                                    const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, {credentials: "include"});
-                                                                    const updatedComments = await res.json();
-                                                                    setComments(prev => ({
-                                                                        ...prev,
-                                                                        [showCommentsFor]: updatedComments
-                                                                    }));
-                                                                }}
-                                                            >
-                                                                ❤️ <span>{comment.likeCount}</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <div className="comment-content">
-                                                        {comment.content}
-                                                    </div>
-                                                </li>
-                                            ))
-                                        }
-                                    </ul>
-                                ) : (
-                                    <div className="empty-comments">
-                                        No comments yet. Be the first to comment!
-                                    </div>
-                                )}
-                            </div>
-
-                            <form
-                                className="comment-form"
-                                onSubmit={async e => {
-                                    e.preventDefault();
-                                    if (!newComment.trim()) return;
-                                    setPostingComment(true);
-                                    await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, {
-                                        method: "POST",
-                                        credentials: "include",
-                                        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                                        body: new URLSearchParams({
-                                            authorUsername: user.name,
-                                            content: newComment
-                                        })
-                                    });
-                                    // Refresh comments for this post
-                                    const res = await fetch(`${API_BASE_URL}/api/posts/${showCommentsFor}/comments`, {credentials: "include"});
-                                    const updatedComments = await res.json();
-                                    setComments(prev => ({...prev, [showCommentsFor]: updatedComments}));
-                                    setNewComment("");
-                                    setPostingComment(false);
-                                }}
-                            >
-                                <input
-                                    type="text"
-                                    className="comment-input"
-                                    value={newComment}
-                                    onChange={e => setNewComment(e.target.value)}
-                                    placeholder="Write a comment..."
-                                    disabled={postingComment}
-                                />
-                                <button
-                                    type="submit"
-                                    className="comment-submit-btn"
-                                    disabled={postingComment || !newComment.trim()}
-                                >
-                                    {postingComment ? 'Posting...' : 'Post'}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     )
