@@ -63,30 +63,27 @@ public class SecurityConfig {
         http.cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // API routes that don't require authentication
                         .requestMatchers(
-                                "/",
-                                "/login",
-                                "/register",
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/css/**",
-                                "/js/**",
-                                "/h2-console/**",
-                                "/api/friends/**"
+                                "/api/friends/**",
+                                "/h2-console/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
-                        .anyRequest().authenticated()
+                        // Allow OPTIONS requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Protect all other API endpoints
+                        .requestMatchers("/api/**").authenticated()
+                        // Allow all other requests (frontend routes)
+                        .anyRequest().permitAll()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .permitAll()
-                )
+                .formLogin(form -> form.disable())
                 .logout(logout -> logout.permitAll())
-                .headers(headers -> headers.frameOptions().disable());
+                .headers(headers -> headers.frameOptions(frameOpt -> frameOpt.disable()));
 
         return http.userDetailsService(userDetailsService).build();
     }
+
 
 
     @Bean
@@ -99,6 +96,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("https://localhost:5173");
+        config.addAllowedOrigin("https://digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
@@ -107,6 +105,17 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public ServletContextInitializer servletContextInitializer() {
+        return servletContext -> {
+            servletContext.getSessionCookieConfig().setSecure(true);
+            servletContext.getSessionCookieConfig().setHttpOnly(true);
+            servletContext.getSessionCookieConfig().setName("JSESSIONID");
+            servletContext.getSessionCookieConfig().setPath("/");
+            // servletContext.getSessionCookieConfig().setDomain("digi-and-demo-refactoring-aci.westeurope.azurecontainer.io");
+        };
     }
 
 }
